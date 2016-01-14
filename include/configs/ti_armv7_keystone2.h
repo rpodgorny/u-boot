@@ -58,13 +58,10 @@
 #define CONFIG_SYS_SPI_U_BOOT_OFFS	CONFIG_SPL_PAD_TO
 
 /* UART Configuration */
-#define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_MEM32
 #if defined(CONFIG_SPL_BUILD) || !defined(CONFIG_DM_SERIAL)
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	-4
-#else
-#define CONFIG_KEYSTONE_SERIAL
 #endif
 #define CONFIG_SYS_NS16550_COM1		KS2_UART0_BASE
 #define CONFIG_SYS_NS16550_COM2		KS2_UART1_BASE
@@ -77,7 +74,6 @@
 #endif
 
 /* SPI Configuration */
-#define CONFIG_SPI_FLASH_STMICRO
 #define CONFIG_DAVINCI_SPI
 #define CONFIG_SYS_SPI_CLK		clk_get_rate(KS2_CLK1_6)
 #define CONFIG_SF_DEFAULT_SPEED		30000000
@@ -162,7 +158,6 @@
 #define I2C_BUS_MAX			3
 
 /* EEPROM definitions */
-#define CONFIG_SYS_I2C_MULTI_EEPROMS
 #define CONFIG_SYS_I2C_EEPROM_ADDR_LEN		2
 #define CONFIG_SYS_I2C_EEPROM_ADDR		0x50
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_BITS	6
@@ -252,7 +247,7 @@
 	"get_mon_net=dhcp ${addr_mon} ${tftp_root}/${name_mon}\0"	\
 	"get_mon_ubi=ubifsload ${addr_mon} ${name_mon}\0"		\
 	"get_uboot_net=dhcp ${loadaddr} ${tftp_root}/${name_uboot}\0"	\
-	"burn_uboot_spi=sf probe; sf erase 0 0x100000; "		\
+	"burn_uboot_spi=sf probe; sf erase 0 0x80000; "		\
 		"sf write ${loadaddr} 0 ${filesize}\0"		\
 	"burn_uboot_nand=nand erase 0 0x100000; "			\
 		"nand write ${loadaddr} 0 ${filesize}\0"		\
@@ -302,7 +297,6 @@
 
 /* And no support for GPIO, yet.. */
 #undef CONFIG_SPL_GPIO_SUPPORT
-#undef CONFIG_CMD_GPIO
 
 /* we may include files below only after all above definitions */
 #include <asm/arch/hardware.h>

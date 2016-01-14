@@ -16,7 +16,7 @@
  /* High Level Configuration Options */
 #define CONFIG_MX35
 #define CONFIG_MX35_HCLK_FREQ	24000000
-#define CONFIG_FSL_CLK
+#define CONFIG_SYS_FSL_CLK
 
 #define CONFIG_SYS_DCACHE_OFF
 #define CONFIG_SYS_CACHELINE_SIZE	32
@@ -104,7 +104,6 @@
 #define CONFIG_CMD_EXT2
 #define CONFIG_CMD_FAT
 
-#define CONFIG_CMD_GPIO
 #define CONFIG_MXC_GPIO
 
 #define CONFIG_NET_RETRY_COUNT	100

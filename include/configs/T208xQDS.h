@@ -13,7 +13,6 @@
 
 #define CONFIG_DISPLAY_BOARDINFO
 #define CONFIG_ICS307_REFCLK_HZ 25000000  /* ICS307 ref clk freq */
-#define CONFIG_FSL_CLK
 #define CONFIG_MMC
 #define CONFIG_USB_EHCI
 #if defined(CONFIG_PPC_T2080)
@@ -446,7 +445,6 @@ unsigned long get_board_ddr_clk(void);
  * Serial Port
  */
 #define CONFIG_CONS_INDEX		1
-#define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	1
 #define CONFIG_SYS_NS16550_CLK		(get_bus_freq(0)/2)
@@ -552,11 +550,7 @@ unsigned long get_board_ddr_clk(void);
  * eSPI - Enhanced SPI
  */
 #ifdef CONFIG_SPI_FLASH
-#define CONFIG_FSL_ESPI
-#define CONFIG_SPI_FLASH_STMICRO
 #ifndef CONFIG_SPL_BUILD
-#define CONFIG_SPI_FLASH_SST
-#define CONFIG_SPI_FLASH_EON
 #endif
 
 #define CONFIG_CMD_SF

@@ -1,3 +1,7 @@
+#
+# SPDX-License-Identifier:	GPL-2.0+
+#
+
 dtb-$(CONFIG_S5PC100) += s5pc1xx-smdkc100.dtb
 dtb-$(CONFIG_S5PC110) += s5pc1xx-goni.dtb
 dtb-$(CONFIG_EXYNOS4) += exynos4210-origen.dtb \
@@ -17,7 +21,8 @@ dtb-$(CONFIG_EXYNOS5) += exynos5250-arndale.dtb \
 	exynos5422-odroidxu3.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += \
 	rk3288-firefly.dtb \
-	rk3288-jerry.dtb
+	rk3288-jerry.dtb \
+	rk3036-sdk.dtb
 dtb-$(CONFIG_TEGRA) += tegra20-harmony.dtb \
 	tegra20-medcom-wide.dtb \
 	tegra20-paz00.dtb \
@@ -65,6 +70,8 @@ dtb-$(CONFIG_ARCH_ZYNQ) += zynq-zc702.dtb \
 	zynq-zc770-xm011.dtb \
 	zynq-zc770-xm012.dtb \
 	zynq-zc770-xm013.dtb
+dtb-$(CONFIG_ARCH_ZYNQMP) += \
+	zynqmp-ep108.dtb
 dtb-$(CONFIG_AM33XX) += am335x-boneblack.dtb am335x-evm.dtb
 dtb-$(CONFIG_AM43XX) += am437x-gp-evm.dtb am437x-sk-evm.dtb
 
@@ -74,15 +81,19 @@ dtb-$(CONFIG_ARCH_SOCFPGA) +=				\
 	socfpga_cyclone5_socdk.dtb			\
 	socfpga_cyclone5_de0_nano_soc.dtb			\
 	socfpga_cyclone5_sockit.dtb			\
-	socfpga_cyclone5_socrates.dtb
+	socfpga_cyclone5_socrates.dtb			\
+	socfpga_cyclone5_sr1500.dtb
+
 dtb-$(CONFIG_TARGET_DRA7XX_EVM) += dra72-evm.dtb dra7-evm.dtb
 dtb-$(CONFIG_TARGET_BEAGLE_X15) += am57xx-beagle-x15.dtb
 dtb-$(CONFIG_TARGET_STV0991) += stv0991.dtb
 
 dtb-$(CONFIG_LS102XA) += ls1021a-qds.dtb \
 	ls1021a-twr.dtb
-dtb-$(CONFIG_FSL_LSCH3) += fsl-ls2085a-qds.dtb \
-	fsl-ls2085a-rdb.dtb
+dtb-$(CONFIG_FSL_LSCH3) += fsl-ls2080a-qds.dtb \
+	fsl-ls2080a-rdb.dtb
+dtb-$(CONFIG_FSL_LSCH2) += fsl-ls1043a-qds.dtb \
+	fsl-ls1043a-rdb.dtb
 
 dtb-$(CONFIG_MACH_SUN4I) += \
 	sun4i-a10-a1000.dtb \
@@ -114,6 +125,7 @@ dtb-$(CONFIG_MACH_SUN5I) += \
 	sun5i-a10s-r7-tv-dongle.dtb \
 	sun5i-a10s-wobo-i5.dtb \
 	sun5i-a13-ampe-a76.dtb \
+	sun5i-a13-empire-electronix-d709.dtb \
 	sun5i-a13-hsg-h702.dtb \
 	sun5i-a13-inet-86vs.dtb \
 	sun5i-a13-inet-98v-rev2.dtb \
@@ -165,6 +177,11 @@ dtb-$(CONFIG_MACH_SUN8I_A33) += \
 	sun8i-a33-ga10h-v1.1.dtb \
 	sun8i-a33-q8-tablet.dtb \
 	sun8i-a33-sinlinx-sina33.dtb
+dtb-$(CONFIG_MACH_SUN8I_A83T) += \
+	sun8i-a83t-allwinner-h8homlet-v2.dtb
+dtb-$(CONFIG_MACH_SUN8I_H3) += \
+	sun8i-h3-orangepi-pc.dtb \
+	sun8i-h3-orangepi-plus.dtb
 dtb-$(CONFIG_MACH_SUN9I) += \
 	sun9i-a80-optimus.dtb \
 	sun9i-a80-cubieboard4.dtb

@@ -14,6 +14,10 @@
 	model = "TI DRA742";
 	compatible = "ti,dra7-evm", "ti,dra742", "ti,dra74", "ti,dra7";
 
+	chosen {
+		stdout-path = &uart1;
+	};
+
 	memory {
 		device_type = "memory";
 		reg = <0x80000000 0x60000000>; /* 1536 MB */
@@ -483,7 +487,7 @@
 
 	spi-max-frequency = <48000000>;
 	m25p80@0 {
-		compatible = "s25fl256s1";
+		compatible = "s25fl256s1","spi-flash";
 		spi-max-frequency = <48000000>;
 		reg = <0>;
 		spi-tx-bus-width = <1>;

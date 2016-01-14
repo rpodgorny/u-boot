@@ -15,6 +15,26 @@ config REQUIRE_SERIAL_CONSOLE
 	  during serial port initialization (default y). Set this to n on
 	  boards which have no debug serial port whatsoever.
 
+config SERIAL_PRESENT
+	bool "Provide a serial driver"
+	depends on DM_SERIAL
+	default y
+	help
+	  In very space-constrained devices even the full UART driver is too
+	  large. In this case the debug UART can still be used in some cases.
+	  This option enables the full UART in U-Boot, so if is it disabled,
+	  the full UART driver will be omitted, thus saving space.
+
+config SPL_SERIAL_PRESENT
+	bool "Provide a serial driver in SPL"
+	depends on DM_SERIAL
+	default y
+	help
+	  In very space-constrained devices even the full UART driver is too
+	  large. In this case the debug UART can still be used in some cases.
+	  This option enables the full UART in SPL, so if is it disabled,
+	  the full UART driver will be omitted, thus saving space.
+
 config DM_SERIAL
 	bool "Enable Driver Model for serial drivers"
 	depends on DM
@@ -53,6 +73,7 @@ config DEBUG_UART
 choice
 	prompt "Select which UART will provide the debug UART"
 	depends on DEBUG_UART
+	default DEBUG_UART_NS16550
 
 config DEBUG_UART_ALTERA_JTAGUART
 	bool "Altera JTAG UART"
@@ -90,6 +111,21 @@ config DEBUG_UART_S5P
 	  Select this to enable a debug UART using the serial_s5p driver. You
 	  will need to provide parameters to make this work. The driver will
 	  be available until the real driver-model serial is running.
+
+config DEBUG_UART_ZYNQ
+	bool "Xilinx Zynq"
+	help
+	  Select this to enable a debug UART using the serial_zynq driver. You
+	  will need to provide parameters to make this work. The driver will
+	  be available until the real driver-model serial is running.
+
+config DEBUG_UART_APBUART
+	depends on LEON3
+	bool "Gaisler APBUART"
+	help
+	  Select this to enable a debug UART using the serial_leon3 driver. You
+	  will need to provide parameters to make this work. The driver will
+	  be available until the real driver model serial is running.
 
 endchoice
 
@@ -170,14 +206,15 @@ config ALTERA_UART
 	  Select this to enable an UART for Altera devices. Please find
 	  details on the "Embedded Peripherals IP User Guide" of Altera.
 
-config ROCKCHIP_SERIAL
-	bool "Rockchip on-chip UART support"
-	depends on ARCH_ROCKCHIP && DM_SERIAL
+config SYS_NS16550
+	bool "NS16550 UART or compatible"
 	help
-	  Select this to enable a debug UART for Rockchip devices. This uses
-	  the ns16550 driver. You will need to #define CONFIG_SYS_NS16550 in
-	  your board config header. The clock input is automatically set to
-	  use the oscillator (24MHz).
+	  Support NS16550 UART or compatible. This can be enabled in the
+	  device tree with the correct input clock frequency. If the input
+	  clock frequency is not defined in the device tree, the macro
+	  CONFIG_SYS_NS16550_CLK defined in a legacy board header file will
+	  be used. It can be a constant or a function to get clock, eg,
+	  get_serial_clock().
 
 config SANDBOX_SERIAL
 	bool "Sandbox UART support"
@@ -205,15 +242,5 @@ config UNIPHIER_SERIAL
 	help
 	  If you have a UniPhier based board and want to use the on-chip
 	  serial ports, say Y to this option. If unsure, say N.
-
-config X86_SERIAL
-	bool "Support for 16550 serial port on x86 machines"
-	depends on X86
-	default y
-	help
-	  Most x86 machines have a ns16550 UART or compatible. This can be
-	  enabled in the device tree with the correct input clock frequency
-	  provided (default 1843200). Enable this to obtain serial console
-	  output.
 
 endmenu

@@ -97,7 +97,6 @@
 #define CONFIG_SPI
 #define CONFIG_OMAP3_SPI
 #define CONFIG_MTD_DEVICE
-#define CONFIG_SPI_FLASH_WINBOND
 #define CONFIG_CMD_SF
 #define CONFIG_SF_DEFAULT_SPEED		(75000000)
 
@@ -113,7 +112,6 @@
 #define CONFIG_SYS_PTV			2	/* Divisor: 2^(PTV+1) => 8 */
 
 /* NS16550 Configuration */
-#define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	(-4)
 #define CONFIG_SYS_NS16550_CLK		(48000000)
@@ -615,7 +613,6 @@
 #define CONFIG_OMAP_GPIO
 
 /* Gpio cmd support */
-#define CONFIG_CMD_GPIO
 
 /* Watchdog */
 #define CONFIG_HW_WATCHDOG

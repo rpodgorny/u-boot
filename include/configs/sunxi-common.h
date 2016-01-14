@@ -41,13 +41,10 @@
 #endif
 
 /* Serial & console */
-#define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 /* ns16550 reg in the low bits of cpu reg */
 #define CONFIG_SYS_NS16550_CLK		24000000
-#ifdef CONFIG_DM_SERIAL
-# define CONFIG_DW_SERIAL
-#else
+#ifndef CONFIG_DM_SERIAL
 # define CONFIG_SYS_NS16550_REG_SIZE	-4
 # define CONFIG_SYS_NS16550_COM1		SUNXI_UART0_BASE
 # define CONFIG_SYS_NS16550_COM2		SUNXI_UART1_BASE
@@ -242,7 +239,8 @@ extern int soft_i2c_gpio_scl;
 #endif
 
 /* PMU */
-#if defined CONFIG_AXP152_POWER || defined CONFIG_AXP209_POWER || defined CONFIG_AXP221_POWER
+#if defined CONFIG_AXP152_POWER || defined CONFIG_AXP209_POWER || \
+    defined CONFIG_AXP221_POWER || defined CONFIG_AXP818_POWER
 #define CONFIG_SPL_POWER_SUPPORT
 #endif
 
@@ -271,7 +269,6 @@ extern int soft_i2c_gpio_scl;
 /* GPIO */
 #define CONFIG_SUNXI_GPIO
 #define CONFIG_SPL_GPIO_SUPPORT
-#define CONFIG_CMD_GPIO
 
 #ifdef CONFIG_VIDEO
 /*
@@ -312,11 +309,9 @@ extern int soft_i2c_gpio_scl;
 #endif
 
 #ifdef CONFIG_SUNXI_GMAC
-#define CONFIG_DW_AUTONEG
 #define CONFIG_PHY_GIGE			/* GMAC can use gigabit PHY	*/
 #define CONFIG_PHY_ADDR		1
 #define CONFIG_MII			/* MII PHY management		*/
-#define CONFIG_PHYLIB
 #endif
 
 #ifdef CONFIG_USB_EHCI_HCD
@@ -336,6 +331,7 @@ extern int soft_i2c_gpio_scl;
 #define CONFIG_USB_GADGET_VBUS_DRAW	0
 
 #define CONFIG_USB_GADGET_DOWNLOAD
+#define CONFIG_USB_FUNCTION_DFU
 #define CONFIG_USB_FUNCTION_FASTBOOT
 #define CONFIG_USB_FUNCTION_MASS_STORAGE
 #endif
@@ -344,6 +340,11 @@ extern int soft_i2c_gpio_scl;
 #define CONFIG_G_DNL_VENDOR_NUM		0x1f3a
 #define CONFIG_G_DNL_PRODUCT_NUM	0x1010
 #define CONFIG_G_DNL_MANUFACTURER	"Allwinner Technology"
+#endif
+
+#ifdef CONFIG_USB_FUNCTION_DFU
+#define CONFIG_CMD_DFU
+#define CONFIG_DFU_RAM
 #endif
 
 #ifdef CONFIG_USB_FUNCTION_FASTBOOT
@@ -393,18 +394,37 @@ extern int soft_i2c_gpio_scl;
  * 32M uncompressed kernel, 16M compressed kernel, 1M fdt,
  * 1M script, 1M pxe and the ramdisk at the end.
  */
+
+#define KERNEL_ADDR_R  __stringify(SDRAM_OFFSET(2000000))
+#define FDT_ADDR_R     __stringify(SDRAM_OFFSET(3000000))
+#define SCRIPT_ADDR_R  __stringify(SDRAM_OFFSET(3100000))
+#define PXEFILE_ADDR_R __stringify(SDRAM_OFFSET(3200000))
+#define RAMDISK_ADDR_R __stringify(SDRAM_OFFSET(3300000))
+
 #define MEM_LAYOUT_ENV_SETTINGS \
 	"bootm_size=0xa000000\0" \
-	"kernel_addr_r=" __stringify(SDRAM_OFFSET(2000000)) "\0" \
-	"fdt_addr_r=" __stringify(SDRAM_OFFSET(3000000)) "\0" \
-	"scriptaddr=" __stringify(SDRAM_OFFSET(3100000)) "\0" \
-	"pxefile_addr_r=" __stringify(SDRAM_OFFSET(3200000)) "\0" \
-	"ramdisk_addr_r=" __stringify(SDRAM_OFFSET(3300000)) "\0"
+	"kernel_addr_r=" KERNEL_ADDR_R "\0" \
+	"fdt_addr_r=" FDT_ADDR_R "\0" \
+	"scriptaddr=" SCRIPT_ADDR_R "\0" \
+	"pxefile_addr_r=" PXEFILE_ADDR_R "\0" \
+	"ramdisk_addr_r=" RAMDISK_ADDR_R "\0"
+
+#define DFU_ALT_INFO_RAM \
+	"dfu_alt_info_ram=" \
+	"kernel ram " KERNEL_ADDR_R " 0x1000000;" \
+	"fdt ram " FDT_ADDR_R " 0x100000;" \
+	"ramdisk ram " RAMDISK_ADDR_R " 0x4000000\0"
 
 #ifdef CONFIG_MMC
 #define BOOT_TARGET_DEVICES_MMC(func) func(MMC, mmc, 0)
+#if CONFIG_MMC_SUNXI_SLOT_EXTRA != -1
+#define BOOT_TARGET_DEVICES_MMC_EXTRA(func) func(MMC, mmc, 1)
+#else
+#define BOOT_TARGET_DEVICES_MMC_EXTRA(func)
+#endif
 #else
 #define BOOT_TARGET_DEVICES_MMC(func)
+#define BOOT_TARGET_DEVICES_MMC_EXTRA(func)
 #endif
 
 #ifdef CONFIG_AHCI
@@ -432,6 +452,7 @@ extern int soft_i2c_gpio_scl;
 #define BOOT_TARGET_DEVICES(func) \
 	func(FEL, fel, na) \
 	BOOT_TARGET_DEVICES_MMC(func) \
+	BOOT_TARGET_DEVICES_MMC_EXTRA(func) \
 	BOOT_TARGET_DEVICES_SCSI(func) \
 	BOOT_TARGET_DEVICES_USB(func) \
 	func(PXE, pxe, na) \
@@ -481,6 +502,7 @@ extern int soft_i2c_gpio_scl;
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	CONSOLE_ENV_SETTINGS \
 	MEM_LAYOUT_ENV_SETTINGS \
+	DFU_ALT_INFO_RAM \
 	"fdtfile=" CONFIG_DEFAULT_DEVICE_TREE ".dtb\0" \
 	"console=ttyS0,115200\0" \
 	BOOTCMD_SUNXI_COMPAT \

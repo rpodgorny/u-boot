@@ -39,11 +39,6 @@
 /*
  * NS16550 Configuration
  */
-#if !defined(CONFIG_SPL_BUILD) && defined(CONFIG_DM_SERIAL)
-#define CONFIG_DW_SERIAL
-#endif
-
-#define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_CLK		CONFIG_SYS_TCLK
 #if !defined(CONFIG_DM_SERIAL)
@@ -128,7 +123,6 @@
  * Common SPI Flash configuration
  */
 #ifdef CONFIG_CMD_SF
-#define CONFIG_SPI_FLASH_MACRONIX	1
 #endif
 
 /*

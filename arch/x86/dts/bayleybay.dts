@@ -10,8 +10,10 @@
 #include <dt-bindings/interrupt-router/intel-irq.h>
 
 /include/ "skeleton.dtsi"
+/include/ "keyboard.dtsi"
 /include/ "serial.dtsi"
 /include/ "rtc.dtsi"
+/include/ "tsc_timer.dtsi"
 
 / {
 	model = "Intel Bayley Bay";

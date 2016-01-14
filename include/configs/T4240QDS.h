@@ -12,7 +12,6 @@
 
 #define CONFIG_T4240QDS
 #define CONFIG_PHYS_64BIT
-#define CONFIG_FSL_CLK
 
 #define CONFIG_FSL_SATA_V2
 #define CONFIG_PCIE4
@@ -402,8 +401,6 @@ unsigned long get_board_ddr_clk(void);
 /*
  * eSPI - Enhanced SPI
  */
-#define CONFIG_FSL_ESPI
-#define CONFIG_SPI_FLASH_SST
 #define CONFIG_CMD_SF
 #define CONFIG_SF_DEFAULT_SPEED         10000000
 #define CONFIG_SF_DEFAULT_MODE          0

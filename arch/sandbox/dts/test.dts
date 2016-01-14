@@ -189,6 +189,12 @@
 		};
 	};
 
+	adc@0 {
+		compatible = "sandbox,adc";
+		vdd-supply = <&buck2>;
+		vss-microvolts = <0>;
+	};
+
 	leds {
 		compatible = "gpio-leds";
 
@@ -273,6 +279,11 @@
 			0x38 8>;
 	};
 
+	timer {
+		compatible = "sandbox,timer";
+		clock-frequency = <1000000>;
+	};
+
 	uart0: serial {
 		compatible = "sandbox,serial";
 		u-boot,dm-pre-reloc;
@@ -301,10 +312,27 @@
 				compatible = "sandbox,usb-hub";
 				#address-cells = <1>;
 				#size-cells = <0>;
-				flash-stick {
+				flash-stick@0 {
 					reg = <0>;
 					compatible = "sandbox,usb-flash";
 					sandbox,filepath = "testflash.bin";
+				};
+
+				flash-stick@1 {
+					reg = <1>;
+					compatible = "sandbox,usb-flash";
+					sandbox,filepath = "testflash1.bin";
+				};
+
+				flash-stick@2 {
+					reg = <2>;
+					compatible = "sandbox,usb-flash";
+					sandbox,filepath = "testflash2.bin";
+				};
+
+				keyb@3 {
+					reg = <3>;
+					compatible = "sandbox,usb-keyb";
 				};
 
 			};

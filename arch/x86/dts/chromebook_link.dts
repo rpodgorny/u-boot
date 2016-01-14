@@ -1,8 +1,10 @@
 /dts-v1/;
 
 /include/ "skeleton.dtsi"
+/include/ "keyboard.dtsi"
 /include/ "serial.dtsi"
 /include/ "rtc.dtsi"
+/include/ "tsc_timer.dtsi"
 
 / {
 	model = "Google Link";
@@ -39,6 +41,10 @@
 
 	chosen {
 		stdout-path = "/serial";
+	};
+
+	keyboard {
+		intel,duplicate-por;
 	};
 
 	spd {

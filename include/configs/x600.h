@@ -77,7 +77,6 @@
 
 /* Ethernet config options */
 #define CONFIG_MII
-#define CONFIG_PHYLIB
 #define CONFIG_PHY_RESET_DELAY			10000		/* in usec */
 #define CONFIG_PHY_ADDR		0	/* PHY address */
 #define CONFIG_PHY_GIGE			/* Include GbE speed/duplex detection */
@@ -117,7 +116,6 @@
 #define CONFIG_CMD_FAT
 #define CONFIG_CMD_FPGA_LOADMK
 #define CONFIG_CMD_FS_GENERIC
-#define CONFIG_CMD_GPIO
 #define CONFIG_CMD_I2C
 #define CONFIG_CMD_MII
 #define CONFIG_CMD_MTDPARTS

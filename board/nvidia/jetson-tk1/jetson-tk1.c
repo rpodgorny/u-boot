@@ -6,12 +6,10 @@
  */
 
 #include <common.h>
-#include <netdev.h>
 #include <power/as3722.h>
 
 #include <asm/arch/gpio.h>
 #include <asm/arch/pinmux.h>
-#include <asm/arch-tegra/gpu.h>
 
 #include "pinmux-config-jetson-tk1.h"
 
@@ -74,16 +72,4 @@ int tegra_pcie_board_init(void)
 
 	return 0;
 }
-
-int board_eth_init(bd_t *bis)
-{
-	return pci_eth_init(bis);
-}
 #endif /* PCI */
-
-int ft_board_setup(void *blob, bd_t *bd)
-{
-	gpu_enable_node(blob, "/gpu@0,57000000");
-
-	return 0;
-}

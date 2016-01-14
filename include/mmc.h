@@ -121,7 +121,12 @@
 #define OCR_VOLTAGE_MASK	0x007FFF80
 #define OCR_ACCESS_MODE		0x60000000
 
-#define SECURE_ERASE		0x80000000
+#define MMC_ERASE_ARG		0x00000000
+#define MMC_SECURE_ERASE_ARG	0x80000000
+#define MMC_TRIM_ARG		0x00000001
+#define MMC_DISCARD_ARG		0x00000003
+#define MMC_SECURE_TRIM1_ARG	0x80000001
+#define MMC_SECURE_TRIM2_ARG	0x80008000
 
 #define MMC_STATUS_MASK		(~0x0206BF7F)
 #define MMC_STATUS_SWITCH_ERROR	(1 << 7)
@@ -484,11 +489,9 @@ struct pci_device_id;
  * This finds all the matching PCI IDs and sets them up as MMC devices.
  *
  * @name:		Name to use for devices
- * @mmc_supported:	PCI IDs to search for
- * @num_ids:		Number of elements in @mmc_supported
+ * @mmc_supported:	PCI IDs to search for, terminated by {0, 0}
  */
-int pci_mmc_init(const char *name, struct pci_device_id *mmc_supported,
-		 int num_ids);
+int pci_mmc_init(const char *name, struct pci_device_id *mmc_supported);
 
 /* Set block count limit because of 16 bit register limit on some hardware*/
 #ifndef CONFIG_SYS_MMC_MAX_BLK_COUNT

@@ -15,7 +15,6 @@
 #define __CONFIG_H
 
 #define CONFIG_DISPLAY_BOARDINFO
-#define CONFIG_FSL_CLK
 
 #define CONFIG_FSL_ELBC
 #define CONFIG_PCI
@@ -330,7 +329,6 @@
  */
 #define CONFIG_CONS_INDEX		1
 #undef CONFIG_SERIAL_SOFTWARE_FIFO
-#define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	1
 #define CONFIG_SYS_NS16550_CLK		get_bus_freq(0)
@@ -381,11 +379,7 @@
  * eSPI - Enhanced SPI
  */
 #define CONFIG_HARD_SPI
-#define CONFIG_FSL_ESPI
 
-#define CONFIG_SPI_FLASH_SST		1
-#define CONFIG_SPI_FLASH_STMICRO	1
-#define CONFIG_SPI_FLASH_WINBOND	1
 #define CONFIG_CMD_SF			1
 #define CONFIG_CMD_SPI			1
 #define CONFIG_SF_DEFAULT_SPEED		10000000
@@ -539,7 +533,6 @@
 #endif
 
 /* Misc Extra Settings */
-#define CONFIG_CMD_GPIO			1
 #undef CONFIG_WATCHDOG	/* watchdog disabled */
 
 /*

@@ -15,7 +15,6 @@
 #define CONFIG_PHYS_64BIT
 #endif
 #define	CONFIG_DISPLAY_BOARDINFO
-#define CONFIG_FSL_CLK
 
 #define CONFIG_P1010
 #define CONFIG_E500			/* BOOKE e500 family */
@@ -605,7 +604,6 @@ extern unsigned long get_sdram_size(void);
 /* Serial Port */
 #define CONFIG_CONS_INDEX	1
 #undef	CONFIG_SERIAL_SOFTWARE_FIFO
-#define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	1
 #define CONFIG_SYS_NS16550_CLK		get_bus_freq(0)
@@ -661,7 +659,6 @@ extern unsigned long get_sdram_size(void);
 #endif
 /* enable read and write access to EEPROM */
 #define CONFIG_CMD_EEPROM
-#define CONFIG_SYS_I2C_MULTI_EEPROMS
 #define CONFIG_SYS_I2C_EEPROM_ADDR_LEN 1
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_BITS 3
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_DELAY_MS 5
@@ -678,8 +675,6 @@ extern unsigned long get_sdram_size(void);
  */
 #if !defined(CONFIG_NAND) || !defined(CONFIG_NAND_SECBOOT)
 /* eSPI - Enhanced SPI */
-#define CONFIG_FSL_ESPI
-#define CONFIG_SPI_FLASH_SPANSION
 #define CONFIG_CMD_SF
 #define CONFIG_SF_DEFAULT_SPEED		10000000
 #define CONFIG_SF_DEFAULT_MODE		SPI_MODE_0

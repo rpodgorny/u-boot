@@ -227,6 +227,7 @@ ifdef CONFIG_SPL_BUILD
 obj-$(CONFIG_ENV_IS_IN_FLASH) += env_flash.o
 obj-$(CONFIG_SPL_YMODEM_SUPPORT) += xyzModem.o
 obj-$(CONFIG_SPL_NET_SUPPORT) += miiphyutil.o
+obj-$(CONFIG_SPL_OF_TRANSLATE) += fdt_support.o
 ifdef CONFIG_SPL_USB_HOST_SUPPORT
 obj-$(CONFIG_SPL_USB_SUPPORT) += usb.o usb_hub.o
 obj-$(CONFIG_USB_STORAGE) += usb_storage.o
@@ -276,9 +277,14 @@ obj-y += memsize.o
 obj-y += stdio.o
 
 # This option is not just y/n - it can have a numeric value
+ifdef CONFIG_FASTBOOT_FLASH
+obj-y += image-sparse.o
 ifdef CONFIG_FASTBOOT_FLASH_MMC_DEV
-obj-y += aboot.o
 obj-y += fb_mmc.o
+endif
+ifdef CONFIG_FASTBOOT_FLASH_NAND_DEV
+obj-y += fb_nand.o
+endif
 endif
 
 obj-$(CONFIG_CMD_BLOB) += cmd_blob.o

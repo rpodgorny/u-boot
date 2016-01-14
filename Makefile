@@ -1,5 +1,9 @@
-VERSION = 2015
-PATCHLEVEL = 10
+#
+# SPDX-License-Identifier:	GPL-2.0+
+#
+
+VERSION = 2016
+PATCHLEVEL = 01
 SUBLEVEL =
 EXTRAVERSION =
 NAME =
@@ -605,6 +609,8 @@ KBUILD_CFLAGS += $(KCFLAGS)
 UBOOTINCLUDE    := \
 		-Iinclude \
 		$(if $(KBUILD_SRC), -I$(srctree)/include) \
+		$(if $(CONFIG_SYS_THUMB_BUILD), $(if $(CONFIG_HAS_THUMB2),, \
+			-I$(srctree)/arch/$(ARCH)/thumb1/include),) \
 		-I$(srctree)/arch/$(ARCH)/include \
 		-include $(srctree)/include/linux/kconfig.h
 
@@ -1130,7 +1136,11 @@ spl/u-boot-spl.pbl: spl/u-boot-spl.bin FORCE
 	$(call if_changed,mkimage)
 
 ifeq ($(ARCH),arm)
+ifdef CONFIG_OF_CONTROL
+UBOOT_BINLOAD := u-boot-dtb.img
+else
 UBOOT_BINLOAD := u-boot.img
+endif
 else
 UBOOT_BINLOAD := u-boot.bin
 endif
@@ -1323,6 +1333,9 @@ spl/sunxi-spl.bin: spl/u-boot-spl
 	@:
 
 spl/u-boot-spl-dtb.sfp: spl/u-boot-spl
+	@:
+
+spl/boot.bin: spl/u-boot-spl
 	@:
 
 tpl/u-boot-tpl.bin: tools prepare

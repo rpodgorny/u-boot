@@ -12,7 +12,6 @@
 #define __CONFIG_H
 
 #define CONFIG_DISPLAY_BOARDINFO
-#define CONFIG_FSL_CLK
 #include "../board/freescale/common/ics307_clk.h"
 
 #ifdef CONFIG_36BIT
@@ -369,7 +368,6 @@
  * shorted - index 1
  */
 #define CONFIG_CONS_INDEX	1
-#define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	1
 #define CONFIG_SYS_NS16550_CLK		get_bus_freq(0)
@@ -421,10 +419,8 @@
  * eSPI - Enhanced SPI
  */
 #define CONFIG_HARD_SPI
-#define CONFIG_FSL_ESPI
 
 #if defined(CONFIG_SPI_FLASH)
-#define CONFIG_SPI_FLASH_SPANSION
 #define CONFIG_CMD_SF
 #define CONFIG_SF_DEFAULT_SPEED	10000000
 #define CONFIG_SF_DEFAULT_MODE	0
@@ -533,7 +529,6 @@
 #define CONFIG_VGA_AS_SINGLE_DEVICE
 #define CONFIG_ATI_RADEON_FB
 #define CONFIG_VIDEO_LOGO
-/*#define CONFIG_CONSOLE_CURSOR*/
 #define CONFIG_SYS_ISA_IO_BASE_ADDRESS CONFIG_SYS_PCIE3_IO_VIRT
 #endif
 

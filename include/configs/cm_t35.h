@@ -22,7 +22,6 @@
  */
 #define CONFIG_OMAP	/* in a TI OMAP core */
 #define CONFIG_OMAP_GPIO
-#define CONFIG_CMD_GPIO
 #define CONFIG_CM_T3X	/* working with CM-T35 and CM-T3730 */
 #define CONFIG_OMAP_COMMON
 /* Common ARM Erratas */
@@ -71,7 +70,6 @@
  */
 #define V_NS16550_CLK			48000000	/* 48MHz (APLL96/2) */
 
-#define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	(-4)
 #define CONFIG_SYS_NS16550_CLK		V_NS16550_CLK

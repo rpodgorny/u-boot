@@ -10,7 +10,6 @@
 #define __CONFIG_H
 
 #define CONFIG_DISPLAY_BOARDINFO
-#define CONFIG_FSL_CLK
 
 /*
  * High Level Configuration Options
@@ -316,7 +315,6 @@
  * Serial Port
  */
 #define CONFIG_CONS_INDEX	1
-#define CONFIG_SYS_NS16550
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	1
 #define CONFIG_SYS_NS16550_CLK		get_bus_freq(0)
@@ -355,7 +353,6 @@
 #ifdef CONFIG_MPC8XXX_SPI
 #define CONFIG_CMD_SPI
 #define CONFIG_USE_SPIFLASH
-#define CONFIG_SPI_FLASH_SPANSION
 #define CONFIG_CMD_SF
 #endif
 

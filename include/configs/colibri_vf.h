@@ -18,7 +18,7 @@
 #define CONFIG_SYS_THUMB_BUILD
 #define CONFIG_USE_ARCH_MEMCPY
 #define CONFIG_USE_ARCH_MEMSET
-#define CONFIG_FSL_CLK
+#define CONFIG_SYS_FSL_CLK
 
 #define CONFIG_ARCH_MISC_INIT
 #define CONFIG_DISPLAY_CPUINFO
@@ -55,7 +55,6 @@
 
 /* GPIO support */
 #define CONFIG_DM_GPIO
-#define CONFIG_CMD_GPIO
 #define CONFIG_VYBRID_GPIO
 
 /* Dynamic MTD partition support */
@@ -271,7 +270,6 @@
 #ifdef CONFIG_OF_CONTROL
 #define CONFIG_DM_SPI
 #define CONFIG_CMD_SPI
-#define CONFIG_FSL_DSPI
 #endif
 
 #endif /* __CONFIG_H */

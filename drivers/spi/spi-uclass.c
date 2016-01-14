@@ -118,6 +118,26 @@ static int spi_post_probe(struct udevice *bus)
 	spi->max_hz = fdtdec_get_int(gd->fdt_blob, bus->of_offset,
 				     "spi-max-frequency", 0);
 
+#if defined(CONFIG_NEEDS_MANUAL_RELOC)
+	struct dm_spi_ops *ops = spi_get_ops(bus);
+
+
+	if (ops->claim_bus)
+		ops->claim_bus += gd->reloc_off;
+	if (ops->release_bus)
+		ops->release_bus += gd->reloc_off;
+	if (ops->set_wordlen)
+		ops->set_wordlen += gd->reloc_off;
+	if (ops->xfer)
+		ops->xfer += gd->reloc_off;
+	if (ops->set_speed)
+		ops->set_speed += gd->reloc_off;
+	if (ops->set_mode)
+		ops->set_mode += gd->reloc_off;
+	if (ops->cs_info)
+		ops->cs_info += gd->reloc_off;
+#endif
+
 	return 0;
 }
 
@@ -137,6 +157,7 @@ static int spi_child_pre_probe(struct udevice *dev)
 
 	slave->max_hz = plat->max_hz;
 	slave->mode = plat->mode;
+	slave->mode_rx = plat->mode_rx;
 
 	return 0;
 }
@@ -348,7 +369,8 @@ void spi_free_slave(struct spi_slave *slave)
 int spi_slave_ofdata_to_platdata(const void *blob, int node,
 				 struct dm_spi_slave_platdata *plat)
 {
-	int mode = 0;
+	int mode = 0, mode_rx = 0;
+	int value;
 
 	plat->cs = fdtdec_get_int(blob, node, "reg", -1);
 	plat->max_hz = fdtdec_get_int(blob, node, "spi-max-frequency", 0);
@@ -358,9 +380,45 @@ int spi_slave_ofdata_to_platdata(const void *blob, int node,
 		mode |= SPI_CPHA;
 	if (fdtdec_get_bool(blob, node, "spi-cs-high"))
 		mode |= SPI_CS_HIGH;
+	if (fdtdec_get_bool(blob, node, "spi-3wire"))
+		mode |= SPI_3WIRE;
 	if (fdtdec_get_bool(blob, node, "spi-half-duplex"))
 		mode |= SPI_PREAMBLE;
+
+	/* Device DUAL/QUAD mode */
+	value = fdtdec_get_uint(blob, node, "spi-tx-bus-width", 1);
+	switch (value) {
+	case 1:
+		break;
+	case 2:
+		mode |= SPI_TX_DUAL;
+		break;
+	case 4:
+		mode |= SPI_TX_QUAD;
+		break;
+	default:
+		error("spi-tx-bus-width %d not supported\n", value);
+		break;
+	}
+
 	plat->mode = mode;
+
+	value = fdtdec_get_uint(blob, node, "spi-rx-bus-width", 1);
+	switch (value) {
+	case 1:
+		break;
+	case 2:
+		mode_rx |= SPI_RX_DUAL;
+		break;
+	case 4:
+		mode_rx |= SPI_RX_QUAD;
+		break;
+	default:
+		error("spi-rx-bus-width %d not supported\n", value);
+		break;
+	}
+
+	plat->mode_rx = mode_rx;
 
 	return 0;
 }
