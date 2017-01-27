@@ -22,7 +22,6 @@
  */
 #include <asm/hardware.h>
 
-
 #define CONFIG_PM9G45		1	/* It's an Ronetix PM9G45 */
 #define CONFIG_SYS_AT91_CPU_NAME	"AT91SAM9G45"
 
@@ -41,7 +40,6 @@
 #define CONFIG_INITRD_TAG	1
 
 #define CONFIG_SKIP_LOWLEVEL_INIT
-#define CONFIG_BOARD_EARLY_INIT_F
 
 /*
  * Hardware drivers
@@ -58,7 +56,6 @@
 #define CONFIG_RED_LED		GPIO_PIN_PD(31) /* this is the user1 led */
 #define CONFIG_GREEN_LED	GPIO_PIN_PD(0)  /* this is the user2 led */
 
-#define CONFIG_BOOTDELAY	3
 
 /*
  * BOOTP options
@@ -71,11 +68,7 @@
 /*
  * Command line configuration.
  */
-#define CONFIG_CMD_CACHE
-#define CONFIG_CMD_PING		1
-#define CONFIG_CMD_DHCP		1
 #define CONFIG_CMD_NAND		1
-#define CONFIG_CMD_USB		1
 
 #define CONFIG_CMD_JFFS2		1
 #define CONFIG_JFFS2_CMDLINE		1
@@ -122,7 +115,6 @@
 #define CONFIG_SYS_USB_OHCI_REGS_BASE	0x00700000 /* _UHP_OHCI_BASE */
 #define CONFIG_SYS_USB_OHCI_SLOT_NAME	"at91sam9g45"
 #define CONFIG_SYS_USB_OHCI_MAX_ROOT_PORTS	2
-#define CONFIG_USB_STORAGE		1
 
 /* board specific(not enough SRAM) */
 #define CONFIG_AT91SAM9G45_LCD_BASE	PHYS_SDRAM + 0xE00000
@@ -155,7 +147,6 @@
 #define CONFIG_SYS_LONGHELP		1
 #define CONFIG_CMDLINE_EDITING		1
 #define CONFIG_AUTO_COMPLETE
-#define CONFIG_SYS_HUSH_PARSER
 
 /*
  * Size of malloc() pool

@@ -32,7 +32,6 @@
  */
 #include "amcc-common.h"
 
-#define CONFIG_BOARD_EARLY_INIT_F 1     /* Call board_early_init_f	*/
 #define CONFIG_MISC_INIT_R	1	/* call misc_init_r()		*/
 #define CONFIG_BOARD_RESET	1	/* call board_reset()		*/
 
@@ -165,7 +164,6 @@
 #ifdef CONFIG_440EP
 /* USB */
 #define CONFIG_USB_OHCI_NEW
-#define CONFIG_USB_STORAGE
 #define CONFIG_SYS_OHCI_BE_CONTROLLER
 
 #undef CONFIG_SYS_USB_OHCI_BOARD_INIT
@@ -193,9 +191,6 @@
 #define CONFIG_CMD_PCI
 
 #ifdef CONFIG_440EP
-    #define CONFIG_CMD_USB
-    #define CONFIG_CMD_FAT
-    #define CONFIG_CMD_EXT2
 #endif
 
 /*-----------------------------------------------------------------------
@@ -203,9 +198,7 @@
  *-----------------------------------------------------------------------
  */
 /* General PCI */
-#define CONFIG_PCI			/* include pci support	        */
 #define CONFIG_PCI_INDIRECT_BRIDGE	/* indirect PCI bridge support */
-#undef  CONFIG_PCI_PNP			/* do (not) pci plug-and-play   */
 #define CONFIG_PCI_SCAN_SHOW            /* show pci devices on startup  */
 #define CONFIG_SYS_PCI_TARGBASE        0x80000000 /* PCIaddr mapped to CONFIG_SYS_PCI_MEMBASE*/
 

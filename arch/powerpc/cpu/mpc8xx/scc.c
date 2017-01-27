@@ -77,7 +77,7 @@ int scc_initialize(bd_t *bis)
 	dev = (struct eth_device*) malloc(sizeof *dev);
 	memset(dev, 0, sizeof *dev);
 
-	sprintf(dev->name, "SCC");
+	strcpy(dev->name, "SCC");
 	dev->iobase = 0;
 	dev->priv   = 0;
 	dev->init   = scc_init;
@@ -199,14 +199,8 @@ static int scc_init (struct eth_device *dev, bd_t * bis)
 	rxIdx = 0;
 	txIdx = 0;
 
-	if (!rtx) {
-#ifdef CONFIG_SYS_ALLOC_DPRAM
-		rtx = (RTXBD *) (immr->im_cpm.cp_dpmem +
-				 dpram_alloc_align (sizeof (RTXBD), 8));
-#else
-		rtx = (RTXBD *) (immr->im_cpm.cp_dpmem + CPM_SCC_BASE);
-#endif
-	}
+	if (!rtx)
+		rtx = (RTXBD *)(immr->im_cpm.cp_dpmem + CPM_SCC_BASE);
 
 #if (defined(PA_ENET_RXD) && defined(PA_ENET_TXD))
 	/* Configure port A pins for Txd and Rxd.

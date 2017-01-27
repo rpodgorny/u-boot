@@ -86,6 +86,16 @@ static int i2c_mux_post_probe(struct udevice *mux)
 	debug("%s: %s\n", __func__, mux->name);
 	priv->selected = -1;
 
+	/* if parent is of i2c uclass already, we'll take that, otherwise
+	 * look if we find an i2c-parent phandle
+	 */
+	if (UCLASS_I2C == device_get_uclass_id(mux->parent)) {
+		priv->i2c_bus = dev_get_parent(mux);
+		debug("%s: bus=%p/%s\n", __func__, priv->i2c_bus,
+		      priv->i2c_bus->name);
+		return 0;
+	}
+
 	ret = uclass_get_device_by_phandle(UCLASS_I2C, mux, "i2c-parent",
 					   &priv->i2c_bus);
 	if (ret)
@@ -183,7 +193,6 @@ static const struct dm_i2c_ops i2c_mux_bus_ops = {
 U_BOOT_DRIVER(i2c_mux_bus) = {
 	.name		= "i2c_mux_bus_drv",
 	.id		= UCLASS_I2C,
-	.per_child_auto_alloc_size = sizeof(struct dm_i2c_chip),
 	.ops	= &i2c_mux_bus_ops,
 };
 

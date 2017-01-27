@@ -700,6 +700,7 @@ extern void *pci_map_bar(pci_dev_t pdev, int bar, int flags);
 extern void pci_register_hose(struct pci_controller* hose);
 extern struct pci_controller* pci_bus_to_hose(int bus);
 extern struct pci_controller *find_hose_by_cfg_addr(void *cfg_addr);
+extern struct pci_controller *pci_get_hose_head(void);
 
 extern int pci_skip_dev(struct pci_controller *hose, pci_dev_t dev);
 extern int pci_hose_scan(struct pci_controller *hose);
@@ -757,7 +758,9 @@ extern void pci_mpc85xx_init (struct pci_controller *hose);
 /**
  * pci_write_bar32() - Write the address of a BAR including control bits
  *
- * This writes a raw address (with control bits) to a bar
+ * This writes a raw address (with control bits) to a bar. This can be used
+ * with devices which require hard-coded addresses, not part of the normal
+ * PCI enumeration process.
  *
  * @hose:	PCI hose to use
  * @dev:	PCI device to update
@@ -765,7 +768,7 @@ extern void pci_mpc85xx_init (struct pci_controller *hose);
  * @addr:	BAR address with control bits
  */
 void pci_write_bar32(struct pci_controller *hose, pci_dev_t dev, int barnum,
-		     u32 addr_and_ctrl);
+		     u32 addr);
 
 /**
  * pci_read_bar32() - read the address of a bar
@@ -1005,6 +1008,7 @@ int dm_pci_hose_probe_bus(struct udevice *bus);
  *
  * @bus:	Bus to read from
  * @bdf:	PCI device address: bus, device and function -see PCI_BDF()
+ * @offset:	Register offset to read
  * @valuep:	Place to put the returned value
  * @size:	Access size
  * @return 0 if OK, -ve on error
@@ -1017,12 +1021,28 @@ int pci_bus_read_config(struct udevice *bus, pci_dev_t bdf, int offset,
  *
  * @bus:	Bus to write from
  * @bdf:	PCI device address: bus, device and function -see PCI_BDF()
+ * @offset:	Register offset to write
  * @value:	Value to write
  * @size:	Access size
  * @return 0 if OK, -ve on error
  */
 int pci_bus_write_config(struct udevice *bus, pci_dev_t bdf, int offset,
 			 unsigned long value, enum pci_size_t size);
+
+/**
+ * pci_bus_clrset_config32() - Update a configuration value for a device
+ *
+ * The register at @offset is updated to (oldvalue & ~clr) | set.
+ *
+ * @bus:	Bus to access
+ * @bdf:	PCI device address: bus, device and function -see PCI_BDF()
+ * @offset:	Register offset to update
+ * @clr:	Bits to clear
+ * @set:	Bits to set
+ * @return 0 if OK, -ve on error
+ */
+int pci_bus_clrset_config32(struct udevice *bus, pci_dev_t bdf, int offset,
+			    u32 clr, u32 set);
 
 /**
  * Driver model PCI config access functions. Use these in preference to others
@@ -1042,12 +1062,25 @@ int dm_pci_write_config8(struct udevice *dev, int offset, u8 value);
 int dm_pci_write_config16(struct udevice *dev, int offset, u16 value);
 int dm_pci_write_config32(struct udevice *dev, int offset, u32 value);
 
+/**
+ * These permit convenient read/modify/write on PCI configuration. The
+ * register is updated to (oldvalue & ~clr) | set.
+ */
+int dm_pci_clrset_config8(struct udevice *dev, int offset, u32 clr, u32 set);
+int dm_pci_clrset_config16(struct udevice *dev, int offset, u32 clr, u32 set);
+int dm_pci_clrset_config32(struct udevice *dev, int offset, u32 clr, u32 set);
+
 /*
  * The following functions provide access to the above without needing the
  * size parameter. We are trying to encourage the use of the 8/16/32-style
  * functions, rather than byte/word/dword. But both are supported.
  */
 int pci_write_config32(pci_dev_t pcidev, int offset, u32 value);
+int pci_write_config16(pci_dev_t pcidev, int offset, u16 value);
+int pci_write_config8(pci_dev_t pcidev, int offset, u8 value);
+int pci_read_config32(pci_dev_t pcidev, int offset, u32 *valuep);
+int pci_read_config16(pci_dev_t pcidev, int offset, u16 *valuep);
+int pci_read_config8(pci_dev_t pcidev, int offset, u8 *valuep);
 
 #ifdef CONFIG_DM_PCI_COMPAT
 /* Compatibility with old naming */
@@ -1057,16 +1090,12 @@ static inline int pci_write_config_dword(pci_dev_t pcidev, int offset,
 	return pci_write_config32(pcidev, offset, value);
 }
 
-int pci_write_config16(pci_dev_t pcidev, int offset, u16 value);
-
 /* Compatibility with old naming */
 static inline int pci_write_config_word(pci_dev_t pcidev, int offset,
 					u16 value)
 {
 	return pci_write_config16(pcidev, offset, value);
 }
-
-int pci_write_config8(pci_dev_t pcidev, int offset, u8 value);
 
 /* Compatibility with old naming */
 static inline int pci_write_config_byte(pci_dev_t pcidev, int offset,
@@ -1075,16 +1104,12 @@ static inline int pci_write_config_byte(pci_dev_t pcidev, int offset,
 	return pci_write_config8(pcidev, offset, value);
 }
 
-int pci_read_config32(pci_dev_t pcidev, int offset, u32 *valuep);
-
 /* Compatibility with old naming */
 static inline int pci_read_config_dword(pci_dev_t pcidev, int offset,
 					u32 *valuep)
 {
 	return pci_read_config32(pcidev, offset, valuep);
 }
-
-int pci_read_config16(pci_dev_t pcidev, int offset, u16 *valuep);
 
 /* Compatibility with old naming */
 static inline int pci_read_config_word(pci_dev_t pcidev, int offset,
@@ -1093,15 +1118,12 @@ static inline int pci_read_config_word(pci_dev_t pcidev, int offset,
 	return pci_read_config16(pcidev, offset, valuep);
 }
 
-int pci_read_config8(pci_dev_t pcidev, int offset, u8 *valuep);
-
 /* Compatibility with old naming */
 static inline int pci_read_config_byte(pci_dev_t pcidev, int offset,
 				       u8 *valuep)
 {
 	return pci_read_config8(pcidev, offset, valuep);
 }
-
 #endif /* CONFIG_DM_PCI_COMPAT */
 
 /**
@@ -1167,6 +1189,17 @@ int pci_get_regions(struct udevice *dev, struct pci_region **iop,
 		    struct pci_region **memp, struct pci_region **prefp);
 
 /**
+ * dm_pci_write_bar32() - Write the address of a BAR
+ *
+ * This writes a raw address to a bar
+ *
+ * @dev:	PCI device to update
+ * @barnum:	BAR number (0-5)
+ * @addr:	BAR address
+ */
+void dm_pci_write_bar32(struct udevice *dev, int barnum, u32 addr);
+
+/**
  * dm_pci_read_bar32() - read a base address register from a device
  *
  * @dev:	Device to check
@@ -1230,9 +1263,9 @@ void *dm_pci_map_bar(struct udevice *dev, int bar, int flags);
 #define dm_pci_mem_to_virt(dev, addr, len, map_flags) \
 	dm_pci_bus_to_virt((dev), (addr), PCI_REGION_MEM, (len), (map_flags))
 #define dm_pci_virt_to_io(dev, addr) \
-	dm_dm_pci_virt_to_bus((dev), (addr), PCI_REGION_IO)
+	dm_pci_virt_to_bus((dev), (addr), PCI_REGION_IO)
 #define dm_pci_io_to_virt(dev, addr, len, map_flags) \
-	dm_dm_pci_bus_to_virt((dev), (addr), PCI_REGION_IO, (len), (map_flags))
+	dm_pci_bus_to_virt((dev), (addr), PCI_REGION_IO, (len), (map_flags))
 
 /**
  * dm_pci_find_device() - find a device by vendor/device ID

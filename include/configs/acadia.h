@@ -32,7 +32,6 @@
 #define CONFIG_SYS_CLK_FREQ    ((in8(CONFIG_SYS_CPLD_BASE + 0) == 0x0c) ? \
 				66666666 : 33333000)
 
-#define CONFIG_BOARD_EARLY_INIT_F 1		/* Call board_early_init_f */
 #define CONFIG_MISC_INIT_F	1		/* Call misc_init_f	*/
 
 #define CONFIG_NO_SERIAL_EEPROM
@@ -153,7 +152,6 @@
 	""
 
 #define CONFIG_USB_OHCI
-#define CONFIG_USB_STORAGE
 
 /* Partitions */
 #define CONFIG_MAC_PARTITION
@@ -167,7 +165,6 @@
  */
 #define CONFIG_CMD_DTT
 #define CONFIG_CMD_NAND
-#define CONFIG_CMD_USB
 
 /*-----------------------------------------------------------------------
  * NAND FLASH

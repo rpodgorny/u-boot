@@ -9,10 +9,7 @@
 #ifndef ARCH_UMC_REGS_H
 #define ARCH_UMC_REGS_H
 
-#define UMC_BASE		0x5b800000
-
-/* SSIF registers */
-#define UMC_SSIF_BASE		UMC_BASE
+#include <linux/bitops.h>
 
 #define UMC_CPURST		0x00000700
 #define UMC_IDSRST		0x0000070C
@@ -48,27 +45,22 @@
 #define UMC_CLKEN_SSIF_RC	0x0000C080
 #define UMC_CLKEN_SSIF_DST	0x0000C084
 
-/* CA registers */
-#define UMC_CA_BASE(ch)		(UMC_BASE + 0x00001000 + 0x00001000 * (ch))
-
-/* DRAM controller registers */
-#define UMC_DRAMCONT_BASE(ch)	(UMC_BASE + 0x00400000 + 0x00200000 * (ch))
-
 #define UMC_CMDCTLA		0x00000000
 #define UMC_CMDCTLB		0x00000004
-#define UMC_INITCTLA		0x00000008
-#define UMC_INITCTLB		0x0000000C
-#define UMC_INITCTLC		0x00000010
 #define UMC_INITSET		0x00000014
+#define   UMC_INITSET_INIT1EN		BIT(1)	/* init without power-on wait */
+#define   UMC_INITSET_INIT0EN		BIT(0)	/* init with power-on wait */
 #define UMC_INITSTAT		0x00000018
-#define UMC_DRMMR0		0x0000001C
-#define UMC_DRMMR1		0x00000020
-#define UMC_DRMMR2		0x00000024
-#define UMC_DRMMR3		0x00000028
+#define   UMC_INITSTAT_INIT1ST		BIT(1)	/* init without power-on wait */
+#define   UMC_INITSTAT_INIT0ST		BIT(0)	/* init with power-on wait */
 #define UMC_SPCCTLA		0x00000030
 #define UMC_SPCCTLB		0x00000034
 #define UMC_SPCSETA		0x00000038
 #define UMC_SPCSETB		0x0000003C
+#define   UMC_SPCSETB_AREFMD_MASK	(0x3)	/* Auto Refresh Mode */
+#define   UMC_SPCSETB_AREFMD_ARB	(0x0)	/* control by arbitor */
+#define   UMC_SPCSETB_AREFMD_CONT	(0x1)	/* control by DRAMCONT */
+#define   UMC_SPCSETB_AREFMD_REG	(0x2)	/* control by register */
 #define UMC_SPCSETC		0x00000040
 #define UMC_SPCSETD		0x00000044
 #define UMC_SPCSTATA		0x00000050
@@ -79,41 +71,37 @@
 #define UMC_FLOWCTLB		0x00000404
 #define UMC_FLOWCTLC		0x00000408
 #define UMC_FLOWCTLG		0x00000508
+#define UMC_FLOWCTLOB0		0x00000520
+#define UMC_FLOWCTLOB1		0x00000524
 #define UMC_RDATACTL_D0		0x00000600
+#define   UMC_RDATACTL_RADLTY_SHIFT	4
+#define   UMC_RDATACTL_RADLTY_MASK	(0xf << (UMC_RDATACTL_RADLTY_SHIFT))
+#define   UMC_RDATACTL_RAD2LTY_SHIFT	8
+#define   UMC_RDATACTL_RAD2LTY_MASK	(0xf << (UMC_RDATACTL_RAD2LTY_SHIFT))
 #define UMC_WDATACTL_D0		0x00000604
 #define UMC_RDATACTL_D1		0x00000608
 #define UMC_WDATACTL_D1		0x0000060C
 #define UMC_DATASET		0x00000610
+#define UMC_RESPCTL		0x00000624
 #define UMC_DCCGCTL		0x00000720
 #define UMC_DICGCTLA		0x00000724
 #define UMC_DICGCTLB		0x00000728
+#define UMC_ERRMASKA		0x00000958
+#define UMC_ERRMASKB		0x0000095c
+#define UMC_BSICMAPSET		0x00000988
 #define UMC_DIOCTLA		0x00000C00
+#define   UMC_DIOCTLA_CTL_NRST		BIT(8)	/* ctl_rst_n */
+#define   UMC_DIOCTLA_CFG_NRST		BIT(0)	/* cfg_rst_n */
 #define UMC_DFICUPDCTLA		0x00000C20
 
-#ifndef __ASSEMBLY__
+/* UM registers */
+#define UMC_MBUS0		0x00080004
+#define UMC_MBUS1		0x00081004
+#define UMC_MBUS2		0x00082004
+#define UMC_MBUS3		0x00083004
 
-#include <linux/types.h>
-
-static inline void umc_polling(u32 address, u32 expval, u32 mask)
-{
-	u32 nmask = ~mask;
-	u32 data;
-	do {
-		data = readl(address) & nmask;
-	} while (data != expval);
-}
-
-static inline void umc_dram_init_start(void __iomem *dramcont)
-{
-	writel(0x00000002, dramcont + UMC_INITSET);
-}
-
-static inline void umc_dram_init_poll(void __iomem *dramcont)
-{
-	while ((readl(dramcont + UMC_INITSTAT) & 0x00000002))
-		;
-}
-
-#endif
+/* UD registers */
+#define UMC_BITPERPIXELMODE_D0	0x010
+#define UMC_PAIR1DOFF_D0	0x054
 
 #endif

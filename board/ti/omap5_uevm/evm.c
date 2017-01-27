@@ -138,7 +138,6 @@ int usb_gadget_handle_interrupts(int index)
 int board_init(void)
 {
 	gpmc_init();
-	gd->bd->bi_arch_number = MACH_TYPE_OMAP5_SEVM;
 	gd->bd->bi_boot_params = (0x80000000 + 0x100); /* boot param addr */
 
 	tca642x_set_inital_state(CONFIG_SYS_I2C_TCA642X_ADDR, tca642x_init);
@@ -198,7 +197,7 @@ int misc_init_r(void)
 	return 0;
 }
 
-void set_muxconf_regs_essential(void)
+void set_muxconf_regs(void)
 {
 	do_set_mux((*ctrl)->control_padconf_core_base,
 		   core_padconf_array_essential,
@@ -245,10 +244,7 @@ int ehci_hcd_init(int index, enum usb_init_type init,
 
 int ehci_hcd_stop(void)
 {
-	int ret;
-
-	ret = omap_ehci_hcd_stop();
-	return ret;
+	return omap_ehci_hcd_stop();
 }
 
 void usb_hub_reset_devices(int port)

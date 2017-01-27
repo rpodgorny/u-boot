@@ -19,17 +19,11 @@
 #define CONFIG_TEGRA_UARTA_UAA_UAB
 #define CONFIG_SYS_NS16550_COM1		NV_PA_APB_UARTA_BASE
 
-#define CONFIG_MACH_TYPE		MACH_TYPE_WHISTLER
-
 /* I2C */
 #define CONFIG_SYS_I2C_TEGRA
-#define CONFIG_CMD_I2C
 
 /* SD/MMC */
-#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
-#define CONFIG_TEGRA_MMC
-#define CONFIG_CMD_MMC
 
 /*
  * Environment in eMMC, at the end of 2nd "boot sector". Note: This assumes
@@ -45,15 +39,12 @@
 /* USB Host support */
 #define CONFIG_USB_EHCI
 #define CONFIG_USB_EHCI_TEGRA
-#define CONFIG_USB_STORAGE
-#define CONFIG_CMD_USB
 
 /* USB networking support */
 #define CONFIG_USB_HOST_ETHER
 #define CONFIG_USB_ETHER_ASIX
 
 /* General networking support */
-#define CONFIG_CMD_DHCP
 
 #include "tegra-common-post.h"
 

@@ -21,13 +21,14 @@ int ftsdc021_sdhci_init(u32 regbase)
 	host = calloc(1, sizeof(struct sdhci_host));
 	if (!host) {
 		puts("sdh_host malloc fail!\n");
-		return 1;
+		return -ENOMEM;
 	}
 
 	host->name = "FTSDC021";
 	host->ioaddr = (void __iomem *)regbase;
 	host->quirks = 0;
-	add_sdhci(host, freq, 0);
+	host->max_clk = freq;
+	add_sdhci(host, 0, 0);
 
 	return 0;
 }
