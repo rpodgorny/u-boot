@@ -1,15 +1,16 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * (C) Copyright 2002
  * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
  * Marius Groeger <mgroeger@sysgo.de>
  *
  * Copyright (C) 2001  Erik Mouw (J.A.K.Mouw@its.tudelft.nl)
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <common.h>
 #include <command.h>
+#include <dm/device.h>
+#include <dm/root.h>
 #include <errno.h>
 #include <fdt_support.h>
 #include <image.h>
@@ -26,11 +27,6 @@ DECLARE_GLOBAL_DATA_PTR;
 
 #define COMMAND_LINE_OFFSET 0x9000
 
-int arch_fixup_fdt(void *blob)
-{
-	return 0;
-}
-
 __weak void board_quiesce_devices(void)
 {
 }
@@ -46,6 +42,13 @@ void bootm_announce_and_cleanup(void)
 #ifdef CONFIG_BOOTSTAGE_REPORT
 	bootstage_report();
 #endif
+
+	/*
+	 * Call remove function of all devices with a removal flag set.
+	 * This may be useful for last-stage operations, like cancelling
+	 * of DMA operation or releasing device internal buffers.
+	 */
+	dm_remove_devices_flags(DM_REMOVE_ACTIVE_ALL);
 }
 
 #if defined(CONFIG_OF_LIBFDT) && !defined(CONFIG_OF_NO_KERNEL)
@@ -155,7 +158,14 @@ int boot_linux_kernel(ulong setup_base, ulong load_address, bool image_64bit)
 			puts("Cannot boot 64-bit kernel on 32-bit machine\n");
 			return -EFAULT;
 		}
+		/* At present 64-bit U-Boot does not support booting a
+		 * kernel.
+		 * TODO(sjg@chromium.org): Support booting both 32-bit and
+		 * 64-bit kernels from 64-bit U-Boot.
+		 */
+#if !CONFIG_IS_ENABLED(X86_64)
 		return cpu_jump_to_64bit(setup_base, load_address);
+#endif
 	} else {
 		/*
 		* Set %ebx, %ebp, and %edi to 0, %esi to point to the

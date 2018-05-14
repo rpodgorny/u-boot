@@ -1,7 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * (C) Copyright 2013 Altera Corporation <www.altera.com>
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <common.h>
@@ -11,7 +10,7 @@
 #include <dwmmc.h>
 #include <errno.h>
 #include <fdtdec.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <linux/err.h>
 #include <malloc.h>
 
@@ -70,7 +69,7 @@ static int socfpga_dwmmc_ofdata_to_platdata(struct udevice *dev)
 		return -EINVAL;
 	}
 
-	fifo_depth = fdtdec_get_int(gd->fdt_blob, dev->of_offset,
+	fifo_depth = fdtdec_get_int(gd->fdt_blob, dev_of_offset(dev),
 				    "fifo-depth", 0);
 	if (fifo_depth < 0) {
 		printf("DWMMC: Can't get FIFO depth\n");
@@ -78,8 +77,8 @@ static int socfpga_dwmmc_ofdata_to_platdata(struct udevice *dev)
 	}
 
 	host->name = dev->name;
-	host->ioaddr = (void *)dev_get_addr(dev);
-	host->buswidth = fdtdec_get_int(gd->fdt_blob, dev->of_offset,
+	host->ioaddr = (void *)devfdt_get_addr(dev);
+	host->buswidth = fdtdec_get_int(gd->fdt_blob, dev_of_offset(dev),
 					"bus-width", 4);
 	host->clksel = socfpga_dwmci_clksel;
 
@@ -92,9 +91,9 @@ static int socfpga_dwmmc_ofdata_to_platdata(struct udevice *dev)
 	host->bus_hz = clk;
 	host->fifoth_val = MSIZE(0x2) |
 		RX_WMARK(fifo_depth / 2 - 1) | TX_WMARK(fifo_depth / 2);
-	priv->drvsel = fdtdec_get_uint(gd->fdt_blob, dev->of_offset,
+	priv->drvsel = fdtdec_get_uint(gd->fdt_blob, dev_of_offset(dev),
 				       "drvsel", 3);
-	priv->smplsel = fdtdec_get_uint(gd->fdt_blob, dev->of_offset,
+	priv->smplsel = fdtdec_get_uint(gd->fdt_blob, dev_of_offset(dev),
 					"smplsel", 0);
 	host->priv = priv;
 
@@ -124,7 +123,7 @@ static int socfpga_dwmmc_probe(struct udevice *dev)
 	upriv->mmc = host->mmc;
 	host->mmc->dev = dev;
 
-	return 0;
+	return dwmci_probe(dev);
 }
 
 static int socfpga_dwmmc_bind(struct udevice *dev)

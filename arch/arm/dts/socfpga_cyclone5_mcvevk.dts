@@ -1,13 +1,12 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) 2015 Marek Vasut <marex@denx.de>
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include "socfpga_cyclone5.dtsi"
 
 / {
-	model = "DENX MCVEVK";
+	model = "Aries MCVEVK";
 	compatible = "altr,socfpga-cyclone5", "altr,socfpga";
 
 	chosen {
@@ -54,5 +53,6 @@
 };
 
 &usb1 {
+	disable-over-current;
 	status = "okay";
 };

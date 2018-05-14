@@ -1,7 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) 2015 Stefan Roese <sr@denx.de>
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <common.h>
@@ -12,7 +11,7 @@
 #include <asm/arch/cpu.h>
 #include <asm/arch/soc.h>
 
-#include "../drivers/ddr/marvell/a38x/ddr3_a38x_topology.h"
+#include "../drivers/ddr/marvell/a38x/ddr3_init.h"
 #include <../serdes/a38x/high_speed_env_spec.h>
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -70,7 +69,8 @@ int hws_board_topology_load(struct serdes_map **serdes_map_array, u8 *count)
  * be used by the DDR3 init code in the SPL U-Boot version to configure
  * the DDR3 controller.
  */
-static struct hws_topology_map board_topology_map = {
+static struct mv_ddr_topology_map board_topology_map = {
+	DEBUG_LEVEL_ERROR,
 	0x1, /* active interfaces */
 	/* cs_mask, mirror, dqs_swap, ck_swap X PUPs */
 	{ { { {0x1, 0, 0, 0},
@@ -79,16 +79,19 @@ static struct hws_topology_map board_topology_map = {
 	      {0x1, 0, 0, 0},
 	      {0x1, 0, 0, 0} },
 	    SPEED_BIN_DDR_1600K,	/* speed_bin */
-	    BUS_WIDTH_16,		/* memory_width */
-	    MEM_4G,			/* mem_size */
+	    MV_DDR_DEV_WIDTH_16BIT,	/* memory_width */
+	    MV_DDR_DIE_CAP_4GBIT,	/* mem_size */
 	    DDR_FREQ_800,		/* frequency */
-	    0, 0,			/* cas_l cas_wl */
-	    HWS_TEMP_LOW} },		/* temperature */
-	5,				/* Num Of Bus Per Interface*/
-	BUS_MASK_32BIT			/* Busses mask */
+	    0, 0,			/* cas_wl cas_l */
+	    MV_DDR_TEMP_LOW,		/* temperature */
+	    MV_DDR_TIM_DEFAULT} },	/* timing */
+	BUS_MASK_32BIT,			/* Busses mask */
+	MV_DDR_CFG_DEFAULT,		/* ddr configuration data source */
+	{ {0} },			/* raw spd data */
+	{0}				/* timing parameters */
 };
 
-struct hws_topology_map *ddr3_get_topology_map(void)
+struct mv_ddr_topology_map *mv_ddr_topology_map_get(void)
 {
 	/* Return the board topology as defined in the board code */
 	return &board_topology_map;
@@ -131,8 +134,12 @@ int board_init(void)
 	/* Toggle GPIO41 to reset onboard switch and phy */
 	clrbits_le32(MVEBU_GPIO1_BASE + 0x0, BIT(9));
 	clrbits_le32(MVEBU_GPIO1_BASE + 0x4, BIT(9));
+	/* GPIO 19 on ClearFog rev 2.1 controls the uSOM onboard phy reset */
+	clrbits_le32(MVEBU_GPIO0_BASE + 0x0, BIT(19));
+	clrbits_le32(MVEBU_GPIO0_BASE + 0x4, BIT(19));
 	mdelay(1);
 	setbits_le32(MVEBU_GPIO1_BASE + 0x0, BIT(9));
+	setbits_le32(MVEBU_GPIO0_BASE + 0x0, BIT(19));
 	mdelay(10);
 
 	/* Init I2C IO expanders */

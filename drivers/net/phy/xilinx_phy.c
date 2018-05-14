@@ -1,9 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * Xilinx PCS/PMA Core phy driver
  *
  * Copyright (C) 2015 - 2016 Xilinx, Inc.
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <config.h>
@@ -104,8 +103,8 @@ static int xilinxphy_of_init(struct phy_device *phydev)
 	u32 phytype;
 
 	debug("%s\n", __func__);
-	phytype = fdtdec_get_int(gd->fdt_blob, phydev->dev->of_offset,
-				 "phy-type", -1);
+	phytype = fdtdec_get_int(gd->fdt_blob, dev_of_offset(phydev->dev),
+				 "xlnx,phy-type", -1);
 	if (phytype == XAE_PHY_TYPE_1000BASE_X)
 		phydev->flags |= XAE_PHY_TYPE_1000BASE_X;
 

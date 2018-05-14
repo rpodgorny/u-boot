@@ -1,8 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (c) 2013, Google Inc.
  * Written by Simon Glass <sjg@chromium.org>
- *
- * SPDX-License-Identifier:	GPL-2.0+
  *
  * Perform a grep of an FDT either displaying the source subset or producing
  * a new .dtb subset which can be used as required.
@@ -10,14 +9,17 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <errno.h>
 #include <getopt.h>
+#include <fcntl.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include <../include/libfdt.h>
-#include <libfdt_internal.h>
+#include "fdt_host.h"
+#include "libfdt_internal.h"
 
 /* Define DEBUG to get some debugging output on stderr */
 #ifdef DEBUG
@@ -522,18 +524,21 @@ static int check_type_include(void *priv, int type, const char *data, int size)
 	 * return 1 at the first match. For exclusive conditions, we must
 	 * check that there are no matches.
 	 */
-	for (val = disp->value_head; val; val = val->next) {
-		if (!(type & val->type))
-			continue;
-		match = fdt_stringlist_contains(data, size, val->string);
-		debug("      - val->type=%x, str='%s', match=%d\n",
-		      val->type, val->string, match);
-		if (match && val->include) {
-			debug("   - match inc %s\n", val->string);
-			return 1;
+	if (data) {
+		for (val = disp->value_head; val; val = val->next) {
+			if (!(type & val->type))
+				continue;
+			match = fdt_stringlist_contains(data, size,
+							val->string);
+			debug("      - val->type=%x, str='%s', match=%d\n",
+			      val->type, val->string, match);
+			if (match && val->include) {
+				debug("   - match inc %s\n", val->string);
+				return 1;
+			}
+			if (match)
+				none_match &= ~val->type;
 		}
-		if (match)
-			none_match &= ~val->type;
 	}
 
 	/*
@@ -810,9 +815,6 @@ static int do_fdtgrep(struct display_info *disp, const char *filename)
 				disp->flags);
 		if (count < 0) {
 			report_error("fdt_find_regions", count);
-			if (count == -FDT_ERR_BADLAYOUT)
-				fprintf(stderr,
-					"/aliases node must come before all other nodes\n");
 			return -1;
 		}
 		if (count <= max_regions)

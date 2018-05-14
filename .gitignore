@@ -30,6 +30,7 @@
 #
 # Top-level generic files
 #
+fit-dtb.blob
 /MLO*
 /SPL*
 /System.map
@@ -84,3 +85,7 @@ GTAGS
 *.orig
 *~
 \#*#
+
+# gcc code coverage files
+*.gcda
+*.gcno

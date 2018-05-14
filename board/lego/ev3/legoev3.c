@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) 2016 David Lechner <david@lechnology.com>
  *
@@ -9,8 +10,6 @@
  *
  * Copyright (C) 2009 Nick Thompson, GE Fanuc, Ltd. <nick.thompson@gefanuc.com>
  * Copyright (C) 2007 Sergey Kubushyn <ksi@koi8.net>
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <common.h>
@@ -25,6 +24,8 @@
 #include <asm/arch/davinci_misc.h>
 #include <linux/errno.h>
 #include <hwconfig.h>
+#include <asm/mach-types.h>
+#include <asm/setup.h>
 
 #ifdef CONFIG_MMC_DAVINCI
 #include <mmc.h>
@@ -145,9 +146,7 @@ int board_early_init_f(void)
 
 int board_init(void)
 {
-#ifndef CONFIG_USE_IRQ
 	irq_init();
-#endif
 
 	/* arch number of the board */
 	/* LEGO didn't register for a unique number and uses da850evm */

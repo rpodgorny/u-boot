@@ -1,6 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0+
 # Copyright (c) 2012 The Chromium OS Authors.
-#
-# SPDX-License-Identifier:	GPL-2.0+
 #
 
 import re
@@ -120,8 +119,9 @@ class Toolchain:
             Priority of toolchain, PRIORITY_CALC=highest, 20=lowest.
         """
         priority_list = ['-elf', '-unknown-linux-gnu', '-linux',
-            '-none-linux-gnueabi', '-uclinux', '-none-eabi',
-            '-gentoo-linux-gnu', '-linux-gnueabi', '-le-linux', '-uclinux']
+            '-none-linux-gnueabi', '-none-linux-gnueabihf', '-uclinux',
+            '-none-eabi', '-gentoo-linux-gnu', '-linux-gnueabi',
+            '-linux-gnueabihf', '-le-linux', '-uclinux']
         for prio in range(len(priority_list)):
             if priority_list[prio] in fname:
                 return PRIORITY_CALC + prio
@@ -143,7 +143,9 @@ class Toolchain:
         """Returns an environment for using the toolchain.
 
         Thie takes the current environment and adds CROSS_COMPILE so that
-        the tool chain will operate correctly.
+        the tool chain will operate correctly. This also disables localized
+        output and possibly unicode encoded output of all build tools by
+        adding LC_ALL=C.
 
         Args:
             full_path: Return the full path in CROSS_COMPILE and don't set
@@ -157,6 +159,8 @@ class Toolchain:
         else:
             env['CROSS_COMPILE'] = wrapper + self.cross
             env['PATH'] = self.path + ':' + env['PATH']
+
+        env['LC_ALL'] = 'C'
 
         return env
 

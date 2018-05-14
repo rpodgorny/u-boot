@@ -1,6 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0+
 # Copyright (c) 2014 Google, Inc
-#
-# SPDX-License-Identifier:      GPL-2.0+
 #
 
 import errno
@@ -216,6 +215,8 @@ class BuilderThread(threading.Thread):
                     args.append('-s')
                 if self.builder.num_jobs is not None:
                     args.extend(['-j', str(self.builder.num_jobs)])
+                if self.builder.warnings_as_errors:
+                    args.append('KCFLAGS=-Werror')
                 config_args = ['%s_defconfig' % brd.target]
                 config_out = ''
                 args.extend(self.builder.toolchains.GetMakeArguments(brd))
@@ -280,13 +281,15 @@ class BuilderThread(threading.Thread):
         outfile = os.path.join(build_dir, 'log')
         with open(outfile, 'w') as fd:
             if result.stdout:
-                fd.write(result.stdout)
+                # We don't want unicode characters in log files
+                fd.write(result.stdout.decode('UTF-8').encode('ASCII', 'replace'))
 
         errfile = self.builder.GetErrFile(result.commit_upto,
                 result.brd.target)
         if result.stderr:
             with open(errfile, 'w') as fd:
-                fd.write(result.stderr)
+                # We don't want unicode characters in log files
+                fd.write(result.stderr.decode('UTF-8').encode('ASCII', 'replace'))
         elif os.path.exists(errfile):
             os.remove(errfile)
 

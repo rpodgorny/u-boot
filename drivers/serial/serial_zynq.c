@@ -1,8 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) 2012 Michal Simek <monstr@monstr.eu>
  * Copyright (C) 2011-2012 Xilinx, Inc. All rights reserved.
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <clk.h>
@@ -15,10 +14,6 @@
 #include <asm/io.h>
 #include <linux/compiler.h>
 #include <serial.h>
-#include <asm/arch/clk.h>
-#include <asm/arch/hardware.h>
-
-DECLARE_GLOBAL_DATA_PTR;
 
 #define ZYNQ_UART_SR_TXEMPTY	(1 << 3) /* TX FIFO empty */
 #define ZYNQ_UART_SR_TXACTIVE	(1 << 11)  /* TX active */
@@ -111,7 +106,6 @@ int zynq_serial_setbrg(struct udevice *dev, int baudrate)
 	struct zynq_uart_priv *priv = dev_get_priv(dev);
 	unsigned long clock;
 
-#if defined(CONFIG_CLK) || defined(CONFIG_SPL_CLK)
 	int ret;
 	struct clk clk;
 
@@ -133,9 +127,7 @@ int zynq_serial_setbrg(struct udevice *dev, int baudrate)
 		dev_err(dev, "failed to enable clock\n");
 		return ret;
 	}
-#else
-	clock = get_uart_clk(0);
-#endif
+
 	_uart_zynq_serial_setbrg(priv->regs, clock, baudrate);
 
 	return 0;
@@ -183,7 +175,7 @@ static int zynq_serial_ofdata_to_platdata(struct udevice *dev)
 {
 	struct zynq_uart_priv *priv = dev_get_priv(dev);
 
-	priv->regs = (struct uart_zynq *)dev_get_addr(dev);
+	priv->regs = (struct uart_zynq *)devfdt_get_addr(dev);
 
 	return 0;
 }

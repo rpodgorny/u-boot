@@ -1,10 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * MISC driver for TI MUSB Glue.
  *
  * (C) Copyright 2016
  *     Texas Instruments Incorporated, <www.ti.com>
- *
- * SPDX-License-Identifier:     GPL-2.0+
  */
 #include <common.h>
 #include <command.h>
@@ -83,12 +82,12 @@ static int ti_musb_ofdata_to_platdata(struct udevice *dev)
 {
 	struct ti_musb_platdata *platdata = dev_get_platdata(dev);
 	const void *fdt = gd->fdt_blob;
-	int node = dev->of_offset;
+	int node = dev_of_offset(dev);
 	int phys;
 	int ctrl_mod;
 	int usb_index;
 
-	platdata->base = (void *)dev_get_addr_index(dev, 1);
+	platdata->base = (void *)devfdt_get_addr_index(dev, 1);
 
 	phys = fdtdec_lookup_phandle(fdt, node, "phys");
 	ctrl_mod = fdtdec_lookup_phandle(fdt, phys, "ti,ctrl_mod");
@@ -106,7 +105,7 @@ static int ti_musb_ofdata_to_platdata(struct udevice *dev)
 							  "mentor,multipoint",
 							  -1);
 	if (platdata->musb_config.multipoint < 0) {
-		error("MUSB multipoint DT entry missing\n");
+		pr_err("MUSB multipoint DT entry missing\n");
 		return -ENOENT;
 	}
 
@@ -115,14 +114,14 @@ static int ti_musb_ofdata_to_platdata(struct udevice *dev)
 	platdata->musb_config.num_eps = fdtdec_get_int(fdt, node,
 						       "mentor,num-eps", -1);
 	if (platdata->musb_config.num_eps < 0) {
-		error("MUSB num-eps DT entry missing\n");
+		pr_err("MUSB num-eps DT entry missing\n");
 		return -ENOENT;
 	}
 
 	platdata->musb_config.ram_bits = fdtdec_get_int(fdt, node,
 							"mentor,ram-bits", -1);
 	if (platdata->musb_config.ram_bits < 0) {
-		error("MUSB ram-bits DT entry missing\n");
+		pr_err("MUSB ram-bits DT entry missing\n");
 		return -ENOENT;
 	}
 
@@ -132,7 +131,7 @@ static int ti_musb_ofdata_to_platdata(struct udevice *dev)
 
 	platdata->plat.power = fdtdec_get_int(fdt, node, "mentor,power", -1);
 	if (platdata->plat.power < 0) {
-		error("MUSB mentor,power DT entry missing\n");
+		pr_err("MUSB mentor,power DT entry missing\n");
 		return -ENOENT;
 	}
 
@@ -178,12 +177,12 @@ static int ti_musb_host_ofdata_to_platdata(struct udevice *dev)
 {
 	struct ti_musb_platdata *platdata = dev_get_platdata(dev);
 	const void *fdt = gd->fdt_blob;
-	int node = dev->of_offset;
+	int node = dev_of_offset(dev);
 	int ret;
 
 	ret = ti_musb_ofdata_to_platdata(dev);
 	if (ret) {
-		error("platdata dt parse error\n");
+		pr_err("platdata dt parse error\n");
 		return ret;
 	}
 
@@ -209,7 +208,7 @@ static int ti_musb_wrapper_bind(struct udevice *parent)
 	int node;
 	int ret;
 
-	for (node = fdt_first_subnode(fdt, parent->of_offset); node > 0;
+	for (node = fdt_first_subnode(fdt, dev_of_offset(parent)); node > 0;
 	     node = fdt_next_subnode(fdt, node)) {
 		struct udevice *dev;
 		const char *name = fdt_get_name(fdt, node, NULL);
@@ -227,9 +226,9 @@ static int ti_musb_wrapper_bind(struct udevice *parent)
 		case USB_DR_MODE_HOST:
 			/* Bind MUSB host */
 			ret = device_bind_driver_to_node(parent, "ti-musb-host",
-							 name, node, &dev);
+					name, offset_to_ofnode(node), &dev);
 			if (ret) {
-				error("musb - not able to bind usb host node\n");
+				pr_err("musb - not able to bind usb host node\n");
 				return ret;
 			}
 			break;

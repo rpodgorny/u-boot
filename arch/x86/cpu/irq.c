@@ -1,7 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) 2015, Bin Meng <bmeng.cn@gmail.com>
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <common.h>
@@ -17,8 +16,6 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-static struct irq_routing_table *pirq_routing_table;
-
 bool pirq_check_irq_routed(struct udevice *dev, int link, u8 irq)
 {
 	struct irq_router *priv = dev_get_priv(dev);
@@ -28,7 +25,7 @@ bool pirq_check_irq_routed(struct udevice *dev, int link, u8 irq)
 	if (priv->config == PIRQ_VIA_PCI)
 		dm_pci_read_config8(dev->parent, LINK_N2V(link, base), &pirq);
 	else
-		pirq = readb(priv->ibase + LINK_N2V(link, base));
+		pirq = readb((uintptr_t)priv->ibase + LINK_N2V(link, base));
 
 	pirq &= 0xf;
 
@@ -58,7 +55,7 @@ void pirq_assign_irq(struct udevice *dev, int link, u8 irq)
 	if (priv->config == PIRQ_VIA_PCI)
 		dm_pci_write_config8(dev->parent, LINK_N2V(link, base), irq);
 	else
-		writeb(irq, priv->ibase + LINK_N2V(link, base));
+		writeb(irq, (uintptr_t)priv->ibase + LINK_N2V(link, base));
 }
 
 static struct irq_info *check_dup_entry(struct irq_info *slot_base,
@@ -98,7 +95,7 @@ static int create_pirq_routing_table(struct udevice *dev)
 	int i;
 	int ret;
 
-	node = dev->of_offset;
+	node = dev_of_offset(dev);
 
 	/* extract the bdf from fdt_pci_addr */
 	priv->bdf = dm_pci_get_bdf(dev->parent);
@@ -219,7 +216,7 @@ static int create_pirq_routing_table(struct udevice *dev)
 	/* Fix up the table checksum */
 	rt->checksum = table_compute_checksum(rt, rt->size);
 
-	pirq_routing_table = rt;
+	gd->arch.pirq_routing_table = rt;
 
 	return 0;
 }
@@ -236,7 +233,7 @@ static void irq_enable_sci(struct udevice *dev)
 		if (priv->config == PIRQ_VIA_PCI)
 			dm_pci_write_config32(dev->parent, priv->actl_addr, 0);
 		else
-			writel(0, priv->ibase + priv->actl_addr);
+			writel(0, (uintptr_t)priv->ibase + priv->actl_addr);
 	}
 }
 
@@ -250,8 +247,8 @@ int irq_router_common_init(struct udevice *dev)
 		return ret;
 	}
 	/* Route PIRQ */
-	pirq_route_irqs(dev, pirq_routing_table->slots,
-			get_irq_slot_count(pirq_routing_table));
+	pirq_route_irqs(dev, gd->arch.pirq_routing_table->slots,
+			get_irq_slot_count(gd->arch.pirq_routing_table));
 
 	if (IS_ENABLED(CONFIG_GENERATE_ACPI_TABLE))
 		irq_enable_sci(dev);
@@ -264,12 +261,12 @@ int irq_router_probe(struct udevice *dev)
 	return irq_router_common_init(dev);
 }
 
-u32 write_pirq_routing_table(u32 addr)
+ulong write_pirq_routing_table(ulong addr)
 {
-	if (!pirq_routing_table)
+	if (!gd->arch.pirq_routing_table)
 		return addr;
 
-	return copy_pirq_routing_table(addr, pirq_routing_table);
+	return copy_pirq_routing_table(addr, gd->arch.pirq_routing_table);
 }
 
 static const struct udevice_id irq_router_ids[] = {

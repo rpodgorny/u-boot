@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0
 /**
  * core.c - DesignWare USB3 DRD Controller Core file
  *
@@ -10,8 +11,6 @@
  * to uboot.
  *
  * commit cd72f890d2 : usb: dwc3: core: enable phy suspend quirk on non-FPGA
- *
- * SPDX-License-Identifier:     GPL-2.0
  */
 
 #include <common.h>
@@ -121,6 +120,8 @@ static struct dwc3_event_buffer *dwc3_alloc_one_event_buffer(struct dwc3 *dwc,
 					     (unsigned long *)&evt->dma);
 	if (!evt->buf)
 		return ERR_PTR(-ENOMEM);
+
+	dwc3_flush_cache((uintptr_t)evt->buf, evt->length);
 
 	return evt;
 }

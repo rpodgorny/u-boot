@@ -1,10 +1,10 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * Vitesse PHY drivers
  *
  * Copyright 2010-2014 Freescale Semiconductor, Inc.
  * Original Author: Andy Fleming
  * Add vsc8662 phy support - Priyanka Jain
- * SPDX-License-Identifier:	GPL-2.0+
  */
 #include <miiphy.h>
 
@@ -127,9 +127,7 @@ static int cis8204_config(struct phy_device *phydev)
 
 	genphy_config_aneg(phydev);
 
-	if ((phydev->interface == PHY_INTERFACE_MODE_RGMII) ||
-			(phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) ||
-			(phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID))
+	if (phy_interface_is_rgmii(phydev))
 		phy_write(phydev, MDIO_DEVAD_NONE, MIIM_CIS8204_EPHY_CON,
 				MIIM_CIS8204_EPHYCON_INIT |
 				MIIM_CIS8204_EPHYCON_RGMII);

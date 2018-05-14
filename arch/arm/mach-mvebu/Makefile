@@ -1,15 +1,13 @@
+# SPDX-License-Identifier: GPL-2.0+
 #
 # Copyright (C) 2014-2016 Stefan Roese <sr@denx.de>
-#
-# SPDX-License-Identifier:	GPL-2.0+
-#
 
 ifdef CONFIG_ARM64
 
 obj-$(CONFIG_ARMADA_3700) += armada3700/
 obj-$(CONFIG_ARMADA_8K) += armada8k/
 obj-y += arm64-common.o
-obj-y += sata.o
+obj-$(CONFIG_AHCI) += sata.o
 
 else # CONFIG_ARM64
 
@@ -27,6 +25,7 @@ ifndef CONFIG_SPL_BUILD
 obj-$(CONFIG_ARMADA_375) += ../../../drivers/ddr/marvell/axp/xor.o
 obj-$(CONFIG_ARMADA_38X) += ../../../drivers/ddr/marvell/a38x/xor.o
 obj-$(CONFIG_ARMADA_XP) += ../../../drivers/ddr/marvell/axp/xor.o
+obj-$(CONFIG_MVEBU_EFUSE) += efuse.o
 endif # CONFIG_SPL_BUILD
 obj-y	+= gpio.o
 obj-y	+= mbus.o

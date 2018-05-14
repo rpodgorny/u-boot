@@ -1,16 +1,16 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) 2012-2015 Panasonic Corporation
  * Copyright (C) 2015-2016 Socionext Inc.
  *   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
+#include <common.h>
+#include <dm.h>
 #include <linux/io.h>
 #include <linux/serial_reg.h>
 #include <linux/sizes.h>
 #include <linux/errno.h>
-#include <dm/device.h>
 #include <serial.h>
 #include <fdtdec.h>
 
@@ -95,7 +95,7 @@ static int uniphier_serial_probe(struct udevice *dev)
 	fdt_addr_t base;
 	u32 tmp;
 
-	base = dev_get_addr(dev);
+	base = devfdt_get_addr(dev);
 	if (base == FDT_ADDR_T_NONE)
 		return -EINVAL;
 
@@ -105,7 +105,7 @@ static int uniphier_serial_probe(struct udevice *dev)
 
 	priv->membase = port;
 
-	priv->uartclk = fdtdec_get_int(gd->fdt_blob, dev->of_offset,
+	priv->uartclk = fdtdec_get_int(gd->fdt_blob, dev_of_offset(dev),
 				       "clock-frequency", 0);
 
 	tmp = readl(&port->lcr_mcr);

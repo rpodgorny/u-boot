@@ -1,7 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0+
 /**
  * (C) Copyright 2014, Cavium Inc.
+ * (C) Copyright 2017, Xilinx Inc.
  *
- * SPDX-License-Identifier:	GPL-2.0+
 **/
 
 #include <asm-offsets.h>
@@ -114,6 +115,22 @@ void __noreturn __efi_runtime psci_system_off(void)
 		;
 }
 
+#ifdef CONFIG_CMD_POWEROFF
+int do_poweroff(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+{
+	puts("poweroff ...\n");
+
+	udelay(50000); /* wait 50 ms */
+
+	disable_interrupts();
+
+	psci_system_off();
+
+	/*NOTREACHED*/
+	return 0;
+}
+#endif
+
 #ifdef CONFIG_PSCI_RESET
 void reset_misc(void)
 {
@@ -129,6 +146,7 @@ void __efi_runtime EFIAPI efi_reset_system(
 	switch (reset_type) {
 	case EFI_RESET_COLD:
 	case EFI_RESET_WARM:
+	case EFI_RESET_PLATFORM_SPECIFIC:
 		psci_system_reset();
 		break;
 	case EFI_RESET_SHUTDOWN:

@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * (C) Copyright 2009
  * Marvell Semiconductor <www.marvell.com>
@@ -8,8 +9,6 @@
  *
  * (C) Copyright 2010-2011
  * Heiko Schocher, DENX Software Engineering, hs@denx.de.
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 /*
@@ -20,27 +19,19 @@
 #ifndef _CONFIG_KM_ARM_H
 #define _CONFIG_KM_ARM_H
 
-
-/* We got removed from Linux mach-types.h */
-#define MACH_TYPE_KM_KIRKWOOD          2255
-
 /*
  * High Level Configuration Options (easy to change)
  */
 #define CONFIG_MARVELL
 #define CONFIG_FEROCEON_88FR131		/* CPU Core subversion */
 #define CONFIG_KW88F6281		/* SOC Name */
-#define CONFIG_MACH_KM_KIRKWOOD		/* Machine type */
 
 #define CONFIG_MACH_TYPE	MACH_TYPE_KM_KIRKWOOD
 
 #define CONFIG_NAND_ECC_BCH
-#define CONFIG_BCH
 
 /* include common defines/options for all Keymile boards */
 #include "keymile-common.h"
-
-#define CONFIG_CMD_NAND
 
 /* SPI NOR Flash default params, used by sf commands */
 #define CONFIG_SF_DEFAULT_SPEED		8100000
@@ -58,7 +49,6 @@
 
 #include "asm/arch/config.h"
 
-#define CONFIG_SYS_TEXT_BASE	0x07d00000	/* code address before reloc */
 #define CONFIG_SYS_MEMTEST_START 0x00400000	/* 4M */
 #define CONFIG_SYS_MEMTEST_END	0x007fffff	/*(_8M -1) */
 #define CONFIG_SYS_LOAD_ADDR	0x00800000	/* default load adr- 8M */
@@ -78,7 +68,7 @@
 		" boardid=0x${IVM_BoardId} hwkey=0x${IVM_HWKey}"
 
 #define CONFIG_KM_DEF_ENV_CPU						\
-	"u-boot="__stringify(CONFIG_HOSTNAME) "/u-boot.kwb\0"		\
+	"u-boot="CONFIG_HOSTNAME "/u-boot.kwb\0"		\
 	CONFIG_KM_UPDATE_UBOOT						\
 	"set_fdthigh=setenv fdt_high ${kernelmem}\0"			\
 	"checkfdt="							\
@@ -107,8 +97,6 @@
  * for your console driver.
  */
 
-#define CONFIG_CONS_INDEX	1	/* Console on UART0 */
-
 /*
  * For booting Linux, the board info and command line data
  * have to be in the first 8 MB of memory, since this is
@@ -118,16 +106,6 @@
 #define CONFIG_CMDLINE_TAG		/* enable passing of ATAGs  */
 #define CONFIG_INITRD_TAG		/* enable INITRD tag */
 #define CONFIG_SETUP_MEMORY_TAGS	/* enable memory tag */
-
-/*
- * Commands configuration
- */
-#define CONFIG_CMD_MTDPARTS
-
-/*
- * Without NOR FLASH we need this
- */
-#define CONFIG_SYS_NO_FLASH
 
 /*
  * NAND Flash configuration
@@ -161,11 +139,6 @@
 #define CONFIG_PHY_BASE_ADR	0
 #define CONFIG_ENV_OVERWRITE	/* ethaddr can be reprogrammed */
 #define CONFIG_KM_COMMON_ETH_INIT /* standard km ethernet_present for piggy */
-
-/*
- * UBI related stuff
- */
-#define CONFIG_SYS_USE_UBI
 
 /*
  * I2C related stuff
@@ -223,7 +196,6 @@ int get_scl(void);
  *  Environment variables configurations
  */
 #if defined CONFIG_KM_ENV_IS_IN_SPI_NOR
-#define CONFIG_ENV_IS_IN_SPI_FLASH  /* use SPI-Flash for environment vars */
 #define CONFIG_ENV_OFFSET		0xc0000     /* no bracets! */
 #define CONFIG_ENV_SIZE			0x02000     /* Size of Environment */
 #define CONFIG_ENV_SECT_SIZE		0x10000
@@ -231,7 +203,6 @@ int get_scl(void);
 					CONFIG_ENV_SECT_SIZE)
 #define CONFIG_ENV_TOTAL_SIZE		0x20000     /* no bracets! */
 #else
-#define CONFIG_ENV_IS_IN_EEPROM		/* use EEPROM for environment vars */
 #define CONFIG_SYS_DEF_EEPROM_ADDR	0x50
 #define CONFIG_ENV_EEPROM_IS_ON_I2C
 #define CONFIG_SYS_EEPROM_WREN
@@ -250,16 +221,6 @@ int get_scl(void);
 
 #define FLASH_GPIO_PIN			0x00010000
 #define KM_FLASH_GPIO_PIN	16
-
-#ifndef MTDIDS_DEFAULT
-# define MTDIDS_DEFAULT		"nand0=orion_nand"
-#endif /* MTDIDS_DEFAULT */
-
-#ifndef MTDPARTS_DEFAULT
-# define MTDPARTS_DEFAULT	"mtdparts="			\
-	"orion_nand:"						\
-		"-(" CONFIG_KM_UBI_PARTITION_NAME_BOOT ");"
-#endif /* MTDPARTS_DEFAULT */
 
 #define	CONFIG_KM_UPDATE_UBOOT						\
 	"update="							\
@@ -296,7 +257,7 @@ int get_scl(void);
 	"arch=arm\0"							\
 	""
 
-#if defined(CONFIG_SYS_NO_FLASH)
+#if !defined(CONFIG_MTD_NOR_FLASH)
 #undef	CONFIG_FLASH_CFI_MTD
 #undef	CONFIG_JFFS2_CMDLINE
 #endif
@@ -312,14 +273,11 @@ int get_scl(void);
 #define CONFIG_KM_RESERVED_PRAM 0x801000
 /* address for the bootcount (taken from end of RAM) */
 #define BOOTCOUNT_ADDR          (CONFIG_KM_RESERVED_PRAM)
-/* Use generic bootcount RAM driver */
-#define CONFIG_BOOTCOUNT_RAM
 
 /* enable POST tests */
 #define CONFIG_POST	(CONFIG_SYS_POST_MEM_REGIONS)
 #define CONFIG_POST_SKIP_ENV_FLAGS
 #define CONFIG_POST_EXTERNAL_WORD_FUNCS
-#define CONFIG_CMD_DIAG
 
 /* we do the whole PCIe FPGA config stuff here */
 

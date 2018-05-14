@@ -1,15 +1,16 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
  * (C) Copyright 2015 - 2016, Xilinx, Inc,
  * Michal Simek <michal.simek@xilinx.com>
  * Siva Durga Prasad <siva.durga.paladugu@xilinx.com>
- *
- * SPDX-License-Identifier:	GPL-2.0
  */
 
 #include <console.h>
 #include <common.h>
 #include <zynqmppl.h>
 #include <linux/sizes.h>
+#include <asm/arch/sys_proto.h>
+#include <memalign.h>
 
 #define DUMMY_WORD	0xffffffff
 
@@ -191,48 +192,51 @@ static int zynqmp_validate_bitstream(xilinx_desc *desc, const void *buf,
 	return 0;
 }
 
-static int invoke_smc(ulong id, ulong reg0, ulong reg1, ulong reg2)
-{
-	struct pt_regs regs;
-	regs.regs[0] = id;
-	regs.regs[1] = reg0;
-	regs.regs[2] = reg1;
-	regs.regs[3] = reg2;
-
-	smc_call(&regs);
-
-	return regs.regs[0];
-}
-
 static int zynqmp_load(xilinx_desc *desc, const void *buf, size_t bsize,
 		     bitstream_type bstype)
 {
+	ALLOC_CACHE_ALIGN_BUFFER(u32, bsizeptr, 1);
 	u32 swap;
-	ulong bin_buf, flags;
+	ulong bin_buf;
 	int ret;
+	u32 buf_lo, buf_hi;
+	u32 ret_payload[PAYLOAD_ARG_CNT];
 
 	if (zynqmp_validate_bitstream(desc, buf, bsize, bsize, &swap))
 		return FPGA_FAIL;
 
 	bin_buf = zynqmp_align_dma_buffer((u32 *)buf, bsize, swap);
+	bsizeptr = (u32 *)&bsize;
 
 	debug("%s called!\n", __func__);
 	flush_dcache_range(bin_buf, bin_buf + bsize);
+	flush_dcache_range((ulong)bsizeptr, (ulong)bsizeptr + sizeof(size_t));
 
-	if (bsize % 4)
-		bsize = bsize / 4 + 1;
-	else
-		bsize = bsize / 4;
-
-	flags = (u32)bsize | ((u64)bstype << 32);
-
-	ret = invoke_smc(ZYNQMP_SIP_SVC_PM_FPGA_LOAD, bin_buf, flags, 0);
+	buf_lo = (u32)bin_buf;
+	buf_hi = upper_32_bits(bin_buf);
+	bstype |= BIT(ZYNQMP_FPGA_BIT_NS);
+	ret = invoke_smc(ZYNQMP_SIP_SVC_PM_FPGA_LOAD, buf_lo, buf_hi,
+			 (u32)(uintptr_t)bsizeptr, bstype, ret_payload);
 	if (ret)
 		debug("PL FPGA LOAD fail\n");
 
 	return ret;
 }
 
+static int zynqmp_pcap_info(xilinx_desc *desc)
+{
+	int ret;
+	u32 ret_payload[PAYLOAD_ARG_CNT];
+
+	ret = invoke_smc(ZYNQMP_SIP_SVC_PM_FPGA_STATUS, 0, 0, 0,
+			 0, ret_payload);
+	if (!ret)
+		printf("PCAP status\t0x%x\n", ret_payload[1]);
+
+	return ret;
+}
+
 struct xilinx_fpga_op zynqmp_op = {
 	.load = zynqmp_load,
+	.info = zynqmp_pcap_info,
 };

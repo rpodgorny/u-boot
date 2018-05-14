@@ -1,19 +1,15 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  *  Copyright (C) 2015 Samsung Electronics
  *  Przemyslaw Marczak  <p.marczak@samsung.com>
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <common.h>
-#include <fdtdec.h>
 #include <errno.h>
 #include <dm.h>
 #include <i2c.h>
 #include <power/pmic.h>
 #include <power/sandbox_pmic.h>
-
-DECLARE_GLOBAL_DATA_PTR;
 
 /**
  * struct sandbox_i2c_pmic_plat_data - platform data for the PMIC
@@ -32,7 +28,7 @@ static int sandbox_i2c_pmic_read_data(struct udevice *emul, uchar chip,
 	struct sandbox_i2c_pmic_plat_data *plat = dev_get_platdata(emul);
 
 	if (plat->rw_reg + len > SANDBOX_PMIC_REG_COUNT) {
-		error("Request exceeds PMIC register range! Max register: %#x",
+		pr_err("Request exceeds PMIC register range! Max register: %#x",
 		      SANDBOX_PMIC_REG_COUNT);
 		return -EFAULT;
 	}
@@ -69,7 +65,7 @@ static int sandbox_i2c_pmic_write_data(struct udevice *emul, uchar chip,
 	len--;
 
 	if (plat->rw_reg + len > SANDBOX_PMIC_REG_COUNT) {
-		error("Request exceeds PMIC register range! Max register: %#x",
+		pr_err("Request exceeds PMIC register range! Max register: %#x",
 		      SANDBOX_PMIC_REG_COUNT);
 	}
 
@@ -108,12 +104,11 @@ static int sandbox_i2c_pmic_ofdata_to_platdata(struct udevice *emul)
 
 	debug("%s:%d Setting PMIC default registers\n", __func__, __LINE__);
 
-	reg_defaults = fdtdec_locate_byte_array(gd->fdt_blob, emul->of_offset,
-						"reg-defaults",
-						SANDBOX_PMIC_REG_COUNT);
+	reg_defaults = dev_read_u8_array_ptr(emul, "reg-defaults",
+					     SANDBOX_PMIC_REG_COUNT);
 
 	if (!reg_defaults) {
-		error("Property \"reg-defaults\" not found for device: %s!",
+		pr_err("Property \"reg-defaults\" not found for device: %s!",
 		      emul->name);
 		return -EINVAL;
 	}

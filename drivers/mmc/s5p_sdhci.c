@@ -1,8 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * (C) Copyright 2012 SAMSUNG Electronics
  * Jaehoon Chung <jh80.chung@samsung.com>
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <common.h>
@@ -10,7 +9,7 @@
 #include <malloc.h>
 #include <sdhci.h>
 #include <fdtdec.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <asm/gpio.h>
 #include <asm/arch/mmc.h>
 #include <asm/arch/clk.h>
@@ -184,10 +183,10 @@ static int sdhci_get_config(const void *blob, int node, struct sdhci_host *host)
 	}
 	host->ioaddr = (void *)base;
 
-	gpio_request_by_name_nodev(blob, node, "pwr-gpios", 0, &host->pwr_gpio,
-				   GPIOD_IS_OUT);
-	gpio_request_by_name_nodev(blob, node, "cd-gpios", 0, &host->cd_gpio,
-				   GPIOD_IS_IN);
+	gpio_request_by_name_nodev(offset_to_ofnode(node), "pwr-gpios", 0,
+				   &host->pwr_gpio, GPIOD_IS_OUT);
+	gpio_request_by_name_nodev(offset_to_ofnode(node), "cd-gpios", 0,
+				   &host->cd_gpio, GPIOD_IS_IN);
 
 	return 0;
 }
@@ -247,7 +246,7 @@ static int s5p_sdhci_probe(struct udevice *dev)
 	struct sdhci_host *host = dev_get_priv(dev);
 	int ret;
 
-	ret = sdhci_get_config(gd->fdt_blob, dev->of_offset, host);
+	ret = sdhci_get_config(gd->fdt_blob, dev_of_offset(dev), host);
 	if (ret)
 		return ret;
 

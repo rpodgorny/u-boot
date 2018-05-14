@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * (C) Copyright 2011
  * eInfochips Ltd. <www.einfochips.com>
@@ -8,22 +9,10 @@
  * Marvell Semiconductor <www.marvell.com>
  * Written-by: Prafulla Wadaskar <prafulla@marvell.com>
  * Contributor: Mahavir Jain <mjain@marvell.com>
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #ifndef __CONFIG_GPLUGD_H
 #define __CONFIG_GPLUGD_H
-
-/*
- * FIXME: fix for error caused due to recent update to mach-types.h
- */
-#include <asm/mach-types.h>
-#ifdef MACH_TYPE_SHEEVAD
-#error "MACH_TYPE_SHEEVAD has been defined properly, please remove this."
-#else
-#define MACH_TYPE_SHEEVAD	2625
-#endif
 
 /*
  * High Level Configuration Options
@@ -31,10 +20,8 @@
 #define CONFIG_SHEEVA_88SV331xV5	1	/* CPU Core subversion */
 #define CONFIG_ARMADA100		1	/* SOC Family Name */
 #define CONFIG_ARMADA168		1	/* SOC Used on this Board */
-#define CONFIG_MACH_TYPE		MACH_TYPE_SHEEVAD /* Machine type */
+#define CONFIG_MACH_TYPE		MACH_TYPE_GPLUGD /* Machine type */
 #define CONFIG_SKIP_LOWLEVEL_INIT	/* disable board lowlevel_init */
-
-#define	CONFIG_SYS_TEXT_BASE	0x00f00000
 
 /*
  * There is no internal RAM in ARMADA100, using DRAM
@@ -46,7 +33,6 @@
 /*
  * Commands configuration
  */
-#define CONFIG_SYS_NO_FLASH		/* Declare no flash (NOR/SPI) */
 
 /* Disable DCACHE */
 #define CONFIG_SYS_DCACHE_OFF
@@ -89,17 +75,11 @@
 /*
  * Environment variables configurations
  */
-#define CONFIG_ENV_IS_NOWHERE
 #define CONFIG_ENV_SIZE			0x4000
 
 #ifdef CONFIG_CMD_USB
-#define CONFIG_USB_EHCI
 #define CONFIG_USB_EHCI_ARMADA100
 #define CONFIG_EHCI_IS_TDI
 #endif /* CONFIG_CMD_USB */
-
-#define CONFIG_DOS_PARTITION
-#define CONFIG_ISO_PARTITION
-#define CONFIG_SUPPORT_VFAT
 
 #endif	/* __CONFIG_GPLUGD_H */

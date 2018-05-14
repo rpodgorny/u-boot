@@ -1,8 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * (C) Copyright 2013
  * David Feng <fenghua@phytium.com.cn>
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <common.h>
@@ -43,7 +42,7 @@ unsigned long timer_read_counter(void)
 	return cntpct;
 }
 
-unsigned long long get_ticks(void)
+uint64_t get_ticks(void)
 {
 	unsigned long ticks = timer_read_counter();
 

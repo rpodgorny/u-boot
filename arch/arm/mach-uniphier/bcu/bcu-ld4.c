@@ -1,9 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) 2011-2014 Panasonic Corporation
  * Copyright (C) 2015-2016 Socionext Inc.
  *   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <linux/io.h>
@@ -24,7 +23,7 @@ void uniphier_ld4_bcu_init(const struct uniphier_board_data *bd)
 	writel(0x11111111, BCSCR5); /* 0xe0000000-0Xffffffff: IPPC/IPPD-bus */
 
 	/* Specify DDR channel */
-	shift = (bd->dram_ch[1].base - bd->dram_ch[0].base) / 0x04000000 * 4;
+	shift = bd->dram_ch[0].size / 0x04000000 * 4;
 	writel(ch(shift), BCIPPCCHR2); /* 0x80000000-0x9fffffff */
 
 	shift -= 32;

@@ -24,8 +24,6 @@
 #include <dm/lists.h>
 #include <dm/uclass-internal.h>
 
-DECLARE_GLOBAL_DATA_PTR;
-
 /*
  * The different states that our SPI flash transitions between.
  * We need to keep track of this across multiple xfer calls since
@@ -515,11 +513,9 @@ static int sandbox_sf_xfer(struct udevice *dev, unsigned int bitlen,
 int sandbox_sf_ofdata_to_platdata(struct udevice *dev)
 {
 	struct sandbox_spi_flash_plat_data *pdata = dev_get_platdata(dev);
-	const void *blob = gd->fdt_blob;
-	int node = dev->of_offset;
 
-	pdata->filename = fdt_getprop(blob, node, "sandbox,filename", NULL);
-	pdata->device_name = fdt_getprop(blob, node, "compatible", NULL);
+	pdata->filename = dev_read_string(dev, "sandbox,filename");
+	pdata->device_name = dev_read_string(dev, "compatible");
 	if (!pdata->filename || !pdata->device_name) {
 		debug("%s: Missing properties, filename=%s, device_name=%s\n",
 		      __func__, pdata->filename, pdata->device_name);
@@ -595,7 +591,7 @@ void sandbox_sf_unbind_emul(struct sandbox_state *state, int busnum, int cs)
 	struct udevice *dev;
 
 	dev = state->spi[busnum][cs].emul;
-	device_remove(dev);
+	device_remove(dev, DM_REMOVE_NORMAL);
 	device_unbind(dev);
 	state->spi[busnum][cs].emul = NULL;
 }
@@ -641,7 +637,7 @@ int sandbox_spi_get_emul(struct sandbox_state *state,
 		debug("%s: busnum=%u, cs=%u: binding SPI flash emulation: ",
 		      __func__, busnum, cs);
 		ret = sandbox_sf_bind_emul(state, busnum, cs, bus,
-					   slave->of_offset, slave->name);
+					   dev_of_offset(slave), slave->name);
 		if (ret) {
 			debug("failed (err=%d)\n", ret);
 			return ret;

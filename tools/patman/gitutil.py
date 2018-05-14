@@ -1,6 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0+
 # Copyright (c) 2011 The Chromium OS Authors.
-#
-# SPDX-License-Identifier:	GPL-2.0+
 #
 
 import command
@@ -407,6 +406,8 @@ def EmailPatches(series, cover_fname, args, dry_run, raise_on_error, cc_fname,
         cc = []
     cmd = ['git', 'send-email', '--annotate']
     if in_reply_to:
+        if type(in_reply_to) != str:
+            in_reply_to = in_reply_to.encode('utf-8')
         cmd.append('--in-reply-to="%s"' % in_reply_to)
     if thread:
         cmd.append('--thread')
@@ -417,10 +418,10 @@ def EmailPatches(series, cover_fname, args, dry_run, raise_on_error, cc_fname,
     if cover_fname:
         cmd.append(cover_fname)
     cmd += args
-    str = ' '.join(cmd)
+    cmdstr = ' '.join(cmd)
     if not dry_run:
-        os.system(str)
-    return str
+        os.system(cmdstr)
+    return cmdstr
 
 
 def LookupEmail(lookup_name, alias=None, raise_on_error=True, level=0):

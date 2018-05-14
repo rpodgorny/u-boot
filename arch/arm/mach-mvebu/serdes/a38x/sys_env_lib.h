@@ -1,14 +1,12 @@
+/* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (C) Marvell International Ltd. and its affiliates
- *
- * SPDX-License-Identifier:	GPL-2.0
  */
 
 #ifndef _SYS_ENV_LIB_H
 #define _SYS_ENV_LIB_H
 
 #include "../../../drivers/ddr/marvell/a38x/ddr3_init.h"
-#include "../../../drivers/ddr/marvell/a38x/ddr3_hws_hw_training.h"
 
 /* Serdes definitions */
 #define COMMON_PHY_BASE_ADDR		0x18300

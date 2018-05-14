@@ -1,10 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) 2011
  * Stefano Babic, DENX Software Engineering, sbabic@denx.de.
  *
  * Copyright (C) 2009 TechNexion Ltd.
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <common.h>
@@ -19,7 +18,7 @@
 #include <spl.h>
 #include <mmc.h>
 #include <asm/gpio.h>
-#ifdef CONFIG_USB_EHCI
+#ifdef CONFIG_USB_EHCI_HCD
 #include <usb.h>
 #include <asm/ehci-omap.h>
 #endif
@@ -46,7 +45,7 @@ static const u32 gpmc_XR16L2751[] = {
 	XR16L2751_GPMC_CONFIG6,
 };
 
-#ifdef CONFIG_USB_EHCI
+#ifdef CONFIG_USB_EHCI_HCD
 static struct omap_usbhs_board_data usbhs_bdata = {
 	.port_mode[0] = OMAP_EHCI_PORT_MODE_PHY,
 	.port_mode[1] = OMAP_EHCI_PORT_MODE_PHY,
@@ -94,7 +93,7 @@ int misc_init_r(void)
 
 	omap_die_id_display();
 
-	eth_addr = getenv("ethaddr");
+	eth_addr = env_get("ethaddr");
 	if (eth_addr)
 		return 0;
 

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * Qualcomm UART driver
  *
@@ -5,8 +6,6 @@
  *
  * UART will work in Data Mover mode.
  * Based on Linux driver.
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <common.h>
@@ -146,7 +145,7 @@ static const struct dm_serial_ops msm_serial_ops = {
 
 static int msm_uart_clk_init(struct udevice *dev)
 {
-	uint clk_rate = fdtdec_get_uint(gd->fdt_blob, dev->of_offset,
+	uint clk_rate = fdtdec_get_uint(gd->fdt_blob, dev_of_offset(dev),
 					"clock-frequency", 115200);
 	uint clkd[2]; /* clk_id and clk_no */
 	int clk_offset;
@@ -154,8 +153,8 @@ static int msm_uart_clk_init(struct udevice *dev)
 	struct clk clk;
 	int ret;
 
-	ret = fdtdec_get_int_array(gd->fdt_blob, dev->of_offset, "clock", clkd,
-				   2);
+	ret = fdtdec_get_int_array(gd->fdt_blob, dev_of_offset(dev), "clock",
+				   clkd, 2);
 	if (ret)
 		return ret;
 
@@ -201,7 +200,7 @@ static int msm_serial_ofdata_to_platdata(struct udevice *dev)
 {
 	struct msm_serial_data *priv = dev_get_priv(dev);
 
-	priv->base = dev_get_addr(dev);
+	priv->base = devfdt_get_addr(dev);
 	if (priv->base == FDT_ADDR_T_NONE)
 		return -EINVAL;
 

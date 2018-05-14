@@ -1,6 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0+
 # Copyright (c) 2013 The Chromium OS Authors.
-#
-# SPDX-License-Identifier:	GPL-2.0+
 #
 
 import multiprocessing
@@ -48,9 +47,9 @@ def ShowActions(series, why_selected, boards_selected, builder, options):
     Args:
         series: Series object
         why_selected: Dictionary where each key is a buildman argument
-                provided by the user, and the value is the boards brought
-                in by that argument. For example, 'arm' might bring in
-                400 boards, so in this case the key would be 'arm' and
+                provided by the user, and the value is the list of boards
+                brought in by that argument. For example, 'arm' might bring
+                in 400 boards, so in this case the key would be 'arm' and
                 the value would be a list of board names.
         boards_selected: Dict of selected boards, key is target name,
                 value is Board object
@@ -75,9 +74,11 @@ def ShowActions(series, why_selected, boards_selected, builder, options):
     print
     for arg in why_selected:
         if arg != 'all':
-            print arg, ': %d boards' % why_selected[arg]
+            print arg, ': %d boards' % len(why_selected[arg])
+            if options.verbose:
+                print '   %s' % ' '.join(why_selected[arg])
     print ('Total boards to build for each commit: %d\n' %
-            why_selected['all'])
+            len(why_selected['all']))
 
 def DoBuildman(options, args, toolchains=None, make_func=None, boards=None,
                clean_dir=False):
@@ -221,9 +222,10 @@ def DoBuildman(options, args, toolchains=None, make_func=None, boards=None,
                     options.git_dir, count, series=None, allow_overwrite=True)
     else:
         series = None
-        options.verbose = True
-        if not options.summary:
-            options.show_errors = True
+        if not options.dry_run:
+            options.verbose = True
+            if not options.summary:
+                options.show_errors = True
 
     # By default we have one thread per CPU. But if there are not enough jobs
     # we can have fewer threads and use a high '-j' value for make.
@@ -260,7 +262,8 @@ def DoBuildman(options, args, toolchains=None, make_func=None, boards=None,
             incremental=options.incremental,
             per_board_out_dir=options.per_board_out_dir,
             config_only=options.config_only,
-            squash_config_y=not options.preserve_config_y)
+            squash_config_y=not options.preserve_config_y,
+            warnings_as_errors=options.warnings_as_errors)
     builder.force_config_on_failure = not options.quick
     if make_func:
         builder.do_make = make_func

@@ -1,14 +1,11 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) 2016 Stefan Roese <sr@denx.de>
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <common.h>
 #include <ahci.h>
 #include <dm.h>
-
-DECLARE_GLOBAL_DATA_PTR;
 
 /*
  * Dummy implementation that can be overwritten by a board
@@ -35,7 +32,7 @@ static int mvebu_ahci_probe(struct udevice *dev)
 	 */
 	board_ahci_enable();
 
-	ahci_init(dev_get_addr_ptr(dev));
+	ahci_init(devfdt_get_addr_ptr(dev));
 
 	return 0;
 }

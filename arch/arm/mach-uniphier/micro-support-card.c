@@ -1,9 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) 2012-2015 Panasonic Corporation
  * Copyright (C) 2015-2016 Socionext Inc.
  *   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <common.h>
@@ -43,16 +42,11 @@ static int support_card_show_revision(void)
 	revision &= 0xff;
 
 	/* revision 3.6.x card changed the revision format */
-	printf("(CPLD version %s%d.%d)\n", revision >> 4 == 6 ? "3." : "",
+	printf("SC:    Micro Support Card (CPLD version %s%d.%d)\n",
+	       revision >> 4 == 6 ? "3." : "",
 	       revision >> 4, revision & 0xf);
 
 	return 0;
-}
-
-int checkboard(void)
-{
-	printf("SC:    Micro Support Card ");
-	return support_card_show_revision();
 }
 
 void support_card_init(void)
@@ -64,6 +58,8 @@ void support_card_init(void)
 	 */
 	udelay(200);
 	support_card_reset_deassert();
+
+	support_card_show_revision();
 }
 
 #if defined(CONFIG_SMC911X)
@@ -75,7 +71,7 @@ int board_eth_init(bd_t *bis)
 }
 #endif
 
-#if !defined(CONFIG_SYS_NO_FLASH)
+#if defined(CONFIG_MTD_NOR_FLASH)
 
 #include <mtd/cfi_flash.h>
 
@@ -157,11 +153,11 @@ static void detect_num_flash_banks(void)
 
 	debug("number of flash banks: %d\n", cfi_flash_num_flash_banks);
 }
-#else /* CONFIG_SYS_NO_FLASH */
+#else /* CONFIG_MTD_NOR_FLASH */
 static void detect_num_flash_banks(void)
 {
 };
-#endif /* CONFIG_SYS_NO_FLASH */
+#endif /* CONFIG_MTD_NOR_FLASH */
 
 void support_card_late_init(void)
 {

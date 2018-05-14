@@ -1,9 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0+
 /*
  * (C) Copyright 2015 Marek Vasut <marex@denx.de>
  *
  * DesignWare APB GPIO driver
- *
- * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <common.h>
@@ -112,13 +111,13 @@ static int gpio_dwapb_bind(struct udevice *dev)
 	if (plat)
 		return 0;
 
-	base = fdtdec_get_addr(blob, dev->of_offset, "reg");
+	base = fdtdec_get_addr(blob, dev_of_offset(dev), "reg");
 	if (base == FDT_ADDR_T_NONE) {
 		debug("Can't get the GPIO register base address\n");
 		return -ENXIO;
 	}
 
-	for (node = fdt_first_subnode(blob, dev->of_offset);
+	for (node = fdt_first_subnode(blob, dev_of_offset(dev));
 	     node > 0;
 	     node = fdt_next_subnode(blob, node)) {
 		if (!fdtdec_get_bool(blob, node, "gpio-controller"))
@@ -142,7 +141,7 @@ static int gpio_dwapb_bind(struct udevice *dev)
 		if (ret)
 			goto err;
 
-		subdev->of_offset = node;
+		dev_set_of_offset(subdev, node);
 		bank++;
 	}
 

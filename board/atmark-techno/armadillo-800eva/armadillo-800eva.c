@@ -271,6 +271,8 @@ int board_early_init_f(void)
 DECLARE_GLOBAL_DATA_PTR;
 int board_init(void)
 {
+	/* board id for linux */
+	gd->bd->bi_arch_number = MACH_TYPE_ARMADILLO800EVA;
 	/* adress of boot parameters */
 	gd->bd->bi_boot_params = ARMADILLO_800EVA_SDRAM_BASE + 0x100;
 
@@ -311,10 +313,6 @@ int dram_init(void)
 
 	return 0;
 }
-
-const struct rmobile_sysinfo sysinfo = {
-	CONFIG_ARCH_RMOBILE_BOARD_STRING
-};
 
 int board_late_init(void)
 {

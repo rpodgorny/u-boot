@@ -1,10 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
  * (C) Copyright 2012 Stephen Warren
  *
  * See file CREDITS for list of people who contributed to this
  * project.
- *
- * SPDX-License-Identifier:	GPL-2.0
  */
 
 #include <common.h>
@@ -21,18 +20,33 @@
  */
 #define BCM2835_WDOG_RSTS_RASPBERRYPI_HALT	0x555
 
+/* max ticks timeout */
+#define BCM2835_WDOG_MAX_TIMEOUT	0x000fffff
+
+#ifdef CONFIG_BCM2835_WDT
+extern void hw_watchdog_disable(void);
+#else
+void hw_watchdog_disable(void) {}
+#endif
+
 __efi_runtime_data struct bcm2835_wdog_regs *wdog_regs =
 	(struct bcm2835_wdog_regs *)BCM2835_WDOG_PHYSADDR;
 
-void __efi_runtime reset_cpu(ulong addr)
+void __efi_runtime reset_cpu(ulong ticks)
 {
-	uint32_t rstc;
+	uint32_t rstc, timeout;
+
+	if (ticks == 0) {
+		hw_watchdog_disable();
+		timeout = RESET_TIMEOUT;
+	} else
+		timeout = ticks & BCM2835_WDOG_MAX_TIMEOUT;
 
 	rstc = readl(&wdog_regs->rstc);
 	rstc &= ~BCM2835_WDOG_RSTC_WRCFG_MASK;
 	rstc |= BCM2835_WDOG_RSTC_WRCFG_FULL_RESET;
 
-	writel(BCM2835_WDOG_PASSWORD | RESET_TIMEOUT, &wdog_regs->wdog);
+	writel(BCM2835_WDOG_PASSWORD | timeout, &wdog_regs->wdog);
 	writel(BCM2835_WDOG_PASSWORD | rstc, &wdog_regs->rstc);
 }
 
@@ -48,6 +62,7 @@ void __efi_runtime EFIAPI efi_reset_system(
 	switch (reset_type) {
 	case EFI_RESET_COLD:
 	case EFI_RESET_WARM:
+	case EFI_RESET_PLATFORM_SPECIFIC:
 		reset_cpu(0);
 		break;
 	case EFI_RESET_SHUTDOWN:
@@ -67,9 +82,9 @@ void __efi_runtime EFIAPI efi_reset_system(
 	while (1) { }
 }
 
-void efi_reset_system_init(void)
+efi_status_t efi_reset_system_init(void)
 {
-	efi_add_runtime_mmio(&wdog_regs, sizeof(*wdog_regs));
+	return efi_add_runtime_mmio(&wdog_regs, sizeof(*wdog_regs));
 }
 
 #endif

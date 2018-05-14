@@ -1,7 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0+
 # Copyright (c) 2016 Google, Inc
 # Written by Simon Glass <sjg@chromium.org>
-#
-# SPDX-License-Identifier:      GPL-2.0+
 #
 # Entry-type module for 'u-boot'
 #
@@ -36,9 +35,6 @@ class Entry_intel_descriptor(Entry_blob):
     def __init__(self, image, etype, node):
         Entry_blob.__init__(self, image, etype, node)
         self._regions = []
-
-    def GetDefaultFilename(self):
-        return 'descriptor.bin'
 
     def GetPositions(self):
         pos = self.data.find(FD_SIGNATURE)

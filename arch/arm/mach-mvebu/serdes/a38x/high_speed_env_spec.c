@@ -1,7 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) Marvell International Ltd. and its affiliates
- *
- * SPDX-License-Identifier:	GPL-2.0
  */
 
 #include <common.h>
@@ -27,7 +26,7 @@
  */
 struct cfg_seq serdes_seq_db[SERDES_LAST_SEQ];
 
-#define	SERDES_VERION		"2.0"
+#define	SERDES_VERSION		"2.0"
 #define ENDED_OK		"High speed PHY - Ended Successfully\n"
 
 #define LINK_WAIT_CNTR		100
@@ -1416,7 +1415,7 @@ int serdes_phy_config(void)
 	DEBUG_INIT_FULL_S("\n### ctrl_high_speed_serdes_phy_config ###\n");
 
 	DEBUG_INIT_S("High speed PHY - Version: ");
-	DEBUG_INIT_S(SERDES_VERION);
+	DEBUG_INIT_S(SERDES_VERSION);
 	DEBUG_INIT_S("\n");
 
 	/* Init serdes sequences DB */
